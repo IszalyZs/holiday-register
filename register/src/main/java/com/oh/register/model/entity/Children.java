@@ -1,16 +1,17 @@
 package com.oh.register.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import java.time.LocalDate;
 
 @Entity(name = "Children")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Children {
@@ -25,11 +26,11 @@ public class Children {
     @NotBlank(message = "The last name field can not be empty!")
     private String lastName;
 
+    @Past(message = "Date of birth must be less than today!")
     @NotNull(message = "The birthday field can not be empty!")
     private LocalDate birthDay;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
     private Employee employee;
 
 

@@ -1,8 +1,6 @@
 package com.oh.register.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -13,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "Employee")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee {

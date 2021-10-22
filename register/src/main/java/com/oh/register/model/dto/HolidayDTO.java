@@ -1,25 +1,34 @@
 package com.oh.register.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class HolidayDTO {
     private Long id;
 
-    @NotNull(message = "The year field can not be empty!")
-    @Column(unique = true)
-    private int year;
+    @Pattern(regexp = "^[2][0-9]{3}", message = "The year length should be exactly 4 numbers and the first number has to be 2!")
+    @NotBlank(message = "The year field can not be empty!")
+    @Column(unique = true, nullable = false)
+    private String year;
 
     private List<LocalDate> localDate = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "HolidayDTO{" +
+                "id=" + id +
+                ", year=" + year +
+
+                '}';
+    }
 }
