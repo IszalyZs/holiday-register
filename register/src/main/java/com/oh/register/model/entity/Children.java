@@ -1,6 +1,7 @@
 package com.oh.register.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,6 +32,7 @@ public class Children {
     private LocalDate birthDay;
 
     @ManyToOne
+    @JsonIgnoreProperties({"firstName","lastName","identityNumber","workplace","position","timeOfEntry","beginningOfEmployment","childrenList"})
     private Employee employee;
 
 
