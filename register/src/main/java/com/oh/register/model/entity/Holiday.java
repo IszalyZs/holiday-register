@@ -1,0 +1,28 @@
+package com.oh.register.model.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity(name = "Holiday")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Holiday {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull(message = "The year field can not be empty!")
+    private int year;
+
+    @ElementCollection
+    private List<LocalDate> localDate= new ArrayList<>();
+}

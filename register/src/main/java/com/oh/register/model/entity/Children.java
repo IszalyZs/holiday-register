@@ -6,13 +6,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 @Entity(name = "Children")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "children")
 public class Children {
 
     @Id
@@ -25,12 +25,11 @@ public class Children {
     @NotBlank(message = "The last name field can not be empty!")
     private String lastName;
 
-    @Temporal(value=TemporalType.DATE)
-    @Column(nullable = false)
-    private Date birthDay;
+    @NotNull(message = "The birthday field can not be empty!")
+    private LocalDate birthDay;
 
     @ManyToOne
-    @JoinColumn(name="employee_id",nullable = false)
+    @JoinColumn(nullable = false)
     private Employee employee;
 
 

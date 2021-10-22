@@ -8,15 +8,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity(name = "Employee")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "employee")
 public class Employee {
 
     @Id
@@ -39,12 +38,10 @@ public class Employee {
     @NotBlank(message = "The position field can not be empty!")
     private String position;
 
-    @Temporal(value = TemporalType.DATE)
-    @Column(nullable = false)
-    private Date timeOfEntry;
+    @NotNull(message = "The time of entry field can not be empty!")
+    private LocalDate timeOfEntry;
 
-    @Temporal(value = TemporalType.DATE)
-    private Date beginningOfEmployment;
+    private LocalDate beginningOfEmployment;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Children> childrenList = new ArrayList<>();
