@@ -33,6 +33,7 @@ public class Children {
 
     @ManyToOne
     @JsonIgnoreProperties({"firstName","lastName","identityNumber","workplace","position","timeOfEntry","beginningOfEmployment","childrenList"})
+    @JoinColumn(name = "employee_id")
     private Employee employee;
 
 

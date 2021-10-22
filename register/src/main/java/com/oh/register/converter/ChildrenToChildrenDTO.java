@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ChildrenToChildrenDTO {
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public ChildrenToChildrenDTO(ModelMapper modelMapper) {

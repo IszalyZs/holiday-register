@@ -70,7 +70,7 @@ public class EmployeeController {
     @PutMapping("/{id}")
     @Operation(summary = "update employee by id", description = "update employee by id")
     public ResponseEntity<?> update(@Valid @RequestBody EmployeeDTO employeeDTO, BindingResult bindingResult, @PathVariable("id") Long id) {
-        EmployeeDTO response;
+        Employee response;
         String logMessage = "Updated employee entity contains error(s): ";
         bindingErrorHandler.bindingResult(bindingResult, logMessage, logger);
         try {

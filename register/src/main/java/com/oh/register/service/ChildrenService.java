@@ -27,7 +27,6 @@ public class ChildrenService {
         this.childrenToChildrenDTO = childrenToChildrenDTO;
     }
 
-
     public List<ChildrenDTO> findAll() {
         List<Children> childrenList = childrenRepository.findAll();
         if (childrenList.size() == 0) {

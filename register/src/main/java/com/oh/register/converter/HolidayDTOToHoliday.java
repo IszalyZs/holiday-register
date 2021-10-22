@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HolidayDTOToHoliday {
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public HolidayDTOToHoliday(ModelMapper modelMapper) {

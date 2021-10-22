@@ -1,5 +1,6 @@
 package com.oh.register.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -43,6 +44,7 @@ public class Employee {
     private LocalDate beginningOfEmployment;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"id","employee"})
     private List<Children> childrenList = new ArrayList<>();
 
 

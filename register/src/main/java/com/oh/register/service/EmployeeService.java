@@ -48,6 +48,10 @@ public class EmployeeService {
     }
 
     public Employee save(EmployeeDTO employeeDTO) {
-    return employeeRepository.save();
+        return employeeRepository.save(employeeDTOToEmployee.getEmployee(employeeDTO));
+    }
+
+    public Employee update(EmployeeDTO employeeDTO) {
+        return employeeRepository.save(employeeDTOToEmployee.getEmployee(employeeDTO));
     }
 }
