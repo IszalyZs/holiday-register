@@ -44,8 +44,10 @@ public class Employee {
     private LocalDate beginningOfEmployment;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"id","employee"})
+    @JsonIgnoreProperties({"employee"})
     private List<Children> childrenList = new ArrayList<>();
 
+    @OneToOne
+    private Holiday holiday;
 
 }

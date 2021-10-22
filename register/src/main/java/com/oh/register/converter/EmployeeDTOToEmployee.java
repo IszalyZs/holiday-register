@@ -10,12 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmployeeDTOToEmployee {
     private final ModelMapper modelMapper;
-    private final ChildrenService childrenService;
 
     @Autowired
-    public EmployeeDTOToEmployee(ModelMapper modelMapper, ChildrenService childrenService) {
+    public EmployeeDTOToEmployee(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
-        this.childrenService = childrenService;
     }
 
     public Employee getEmployee(EmployeeDTO employeeDTO) {

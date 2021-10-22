@@ -1,13 +1,14 @@
 package com.oh.register.model.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity(name = "Holiday")
 @Getter
@@ -20,11 +21,17 @@ public class Holiday {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Pattern(regexp = "^[2][0-9]{3}", message = "The year length should be exactly 4 numbers and the first number has to be 2!")
-    @NotBlank(message = "The year field can not be empty!")
-    @Column(unique = true, nullable = false)
-    private String year;
+    @OneToOne
+    private Employee employee;
+
+    private Integer sumdays;
+
+    private LocalDate startDate;
+
+    private LocalDate finishDate;
 
     @ElementCollection
-    private List<LocalDate> localDate= new ArrayList<>();
+    private Map<Integer,String[][]> maps= new HashMap<>();
+
+
 }
