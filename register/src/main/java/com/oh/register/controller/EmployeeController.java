@@ -32,26 +32,26 @@ public class EmployeeController {
         this.employeeService = employeeService;
         this.bindingErrorHandler = bindingErrorHandler;
     }
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "list all employee", description = "list all employee")
     public ResponseEntity<List<Employee>> findAll() {
         return ResponseEntity.ok(employeeService.findAll());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/delete")
     @Operation(summary = "delete employee by id", description = "delete employee by id")
     public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
         employeeService.deleteById(id);
         return ResponseEntity.ok("The entity was deleted with id: " + id + "!");
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/get")
     @Operation(summary = "list employee by id", description = "list employee by id")
     public ResponseEntity<Employee> findById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(employeeService.findById(id));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     @Operation(summary = "save employee", description = "save employee")
     public ResponseEntity<?> save(@Valid @RequestBody EmployeeDTO employeeDTO, BindingResult bindingResult) {
         if (employeeDTO.getId() != null) employeeDTO.setId(null);
@@ -67,7 +67,7 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     @Operation(summary = "update employee by id", description = "update employee by id")
     public ResponseEntity<?> update(@Valid @RequestBody EmployeeDTO employeeDTO, BindingResult bindingResult, @PathVariable("id") Long id) {
         Employee response;

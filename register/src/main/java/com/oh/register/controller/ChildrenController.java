@@ -31,37 +31,38 @@ public class ChildrenController {
         this.bindingErrorHandler = bindingErrorHandler;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "list all children", description = "list all children")
     public ResponseEntity<List<ChildrenDTO>> findAll() {
         return ResponseEntity.ok(childrenService.findAll());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/delete")
     @Operation(summary = "delete children by id", description = "delete children by id")
     public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
         childrenService.deleteById(id);
         return ResponseEntity.ok("The entity was deleted with id: " + id + "!");
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/get")
     @Operation(summary = "list children by id", description = "list children by id")
     public ResponseEntity<ChildrenDTO> findById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(childrenService.findById(id));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     @Operation(summary = "save children", description = "save children")
-    public ResponseEntity<?> save(@Valid @RequestBody ChildrenDTO childrenDTO, BindingResult bindingResult) {
+    public ResponseEntity<ChildrenDTO> save(@Valid @RequestBody ChildrenDTO childrenDTO, BindingResult bindingResult) {
+        System.out.println(childrenDTO);
         if (childrenDTO.getId() != null) childrenDTO.setId(null);
         String logMessage = "Posted children entity contains error(s): ";
         bindingErrorHandler.bindingResult(bindingResult, logMessage, logger);
         return ResponseEntity.ok(childrenService.save(childrenDTO));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     @Operation(summary = "update children by id", description = "update children by id")
-    public ResponseEntity<?> update(@Valid @RequestBody ChildrenDTO childrenDTO, BindingResult bindingResult, @PathVariable("id") Long id) {
+    public ResponseEntity<ChildrenDTO> update(@Valid @RequestBody ChildrenDTO childrenDTO, BindingResult bindingResult, @PathVariable("id") Long id) {
         String logMessage = "Updated children entity contains error(s): ";
         bindingErrorHandler.bindingResult(bindingResult, logMessage, logger);
         childrenDTO.setId(id);

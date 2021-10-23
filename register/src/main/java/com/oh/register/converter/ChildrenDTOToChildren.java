@@ -23,7 +23,7 @@ public class ChildrenDTOToChildren {
     }
 
     public Children getChildren(ChildrenDTO childrenDTO) {
-        Long id = childrenDTO.getEmployee().getId();
+        Long id = childrenDTO.getEmployeeDTO().getId();
         Optional<Employee> employeeOptional = employeeRepository.findById(id);
         if (employeeOptional.isEmpty())
             throw new RegisterException("The employee entity does not exist with id: " + id + "!");

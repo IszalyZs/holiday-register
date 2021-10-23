@@ -32,7 +32,7 @@ public class Children {
     private LocalDate birthDay;
 
     @ManyToOne
-    @JsonIgnoreProperties({"firstName","lastName","identityNumber","workplace","position","timeOfEntry","beginningOfEmployment","childrenList"})
+    @JsonIgnoreProperties({"firstName","lastName","identityNumber","workplace","position","timeOfEntry","beginningOfEmployment","childrenList","maxHolidayOfYear","holiday"})
     @JoinColumn(name = "employee_id")
     private Employee employee;
 

@@ -1,7 +1,6 @@
 package com.oh.register.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.oh.register.model.entity.Children;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +9,8 @@ import lombok.Setter;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -45,8 +46,32 @@ public class EmployeeDTO {
 
     private LocalDate beginningOfEmployment;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "employeeDTO", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Children> childrenList = new ArrayList<>();
+    private List<ChildrenDTO> childrenList = new ArrayList<>();
 
+    @OneToOne
+    @JsonIgnore
+    private HolidayDTO holidayDTO;
+
+    @NotNull(message = "The maxHolidayOfYear of entry field can not be empty!")
+    @Min(value = 20, message = "The value cannot be less than 20!")
+    private Integer maxHolidayOfYear;
+
+    @Override
+    public String toString() {
+        return "EmployeeDTO{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", identityNumber='" + identityNumber + '\'' +
+                ", workplace='" + workplace + '\'' +
+                ", position='" + position + '\'' +
+                ", timeOfEntry=" + timeOfEntry +
+                ", beginningOfEmployment=" + beginningOfEmployment +
+                ", childrenList=" + childrenList +
+                ", holidayDTO=" + holidayDTO +
+                ", maxHolidayOfYear=" + maxHolidayOfYear +
+                '}';
+    }
 }

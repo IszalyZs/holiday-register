@@ -6,9 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Entity(name = "Holiday")
 @Getter
@@ -24,14 +25,20 @@ public class Holiday {
     @OneToOne
     private Employee employee;
 
-    private Integer sumdays;
-
     private LocalDate startDate;
 
     private LocalDate finishDate;
 
     @ElementCollection
-    private Map<Integer,String[][]> maps= new HashMap<>();
-
-
+    private Map<LocalDate, LocalDate> localDateStorage = new TreeMap<>();
 }
+/*
+A munkatárshoz fel kell tudni venni, hogy mettől meddig van szabadságon (a szabadság első és utolsó napja legyen rögzítve).
+Lehessen törölni szabadságot úgy, hogy megadom a kezdő és a végdátumot (figyelem, ez feltétlen a szabadság teljes törlésével azonos).
+Üres intervallumot (a kezdő dátum nagyobb, mint a végdátum nem tárolunk).
+Le kell tudni kérdezni
+- egy munkatárs egy adott időszakban (dátumtól dátumig) kivett összes szabadság intervallumát,
+- egy munkatárs egy adott időszakban (dátumtól dátumig) hány napot dolgozott,
+- egy munkatárs egy adott év adott hónapjában hány napot dolgozott.
+
+ */

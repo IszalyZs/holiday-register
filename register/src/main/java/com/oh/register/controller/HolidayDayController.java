@@ -32,26 +32,26 @@ public class HolidayDayController {
         this.bindingErrorHandler = bindingErrorHandler;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "list all holiday days", description = "list all holiday days")
     public ResponseEntity<List<HolidayDayDTO>> findAll() {
         return ResponseEntity.ok(holidayDayService.findAll());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/delete")
     @Operation(summary = "delete holiday day by id", description = "delete holiday day by id")
     public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
         holidayDayService.deleteById(id);
         return ResponseEntity.ok("The entity was deleted with id: " + id + "!");
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/get")
     @Operation(summary = "list holiday day by id", description = "list holiday day by id")
     public ResponseEntity<HolidayDayDTO> findById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(holidayDayService.findById(id));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     @Operation(summary = "save holiday day", description = "save holiday day")
     public ResponseEntity<?> save(@Valid @RequestBody HolidayDayDTO holidayDayDTO, BindingResult bindingResult) {
         if (holidayDayDTO.getId() != null) holidayDayDTO.setId(null);
@@ -67,7 +67,7 @@ public class HolidayDayController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     @Operation(summary = "update holiday day by id", description = "update holiday day by id")
     public ResponseEntity<?> update(@Valid @RequestBody HolidayDayDTO holidayDayDTO, BindingResult bindingResult, @PathVariable("id") Long id) {
         HolidayDayDTO response;

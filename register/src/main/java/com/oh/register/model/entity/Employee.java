@@ -50,4 +50,7 @@ public class Employee {
     @OneToOne
     private Holiday holiday;
 
+    @NotNull(message = "The maxHolidayOfYear of entry field can not be empty!")
+    private Integer maxHolidayOfYear;
+
 }
