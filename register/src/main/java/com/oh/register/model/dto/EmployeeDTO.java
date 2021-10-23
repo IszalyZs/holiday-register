@@ -57,21 +57,4 @@ public class EmployeeDTO {
     @NotNull(message = "The maxHolidayOfYear of entry field can not be empty!")
     @Min(value = 20, message = "The value cannot be less than 20!")
     private Integer maxHolidayOfYear;
-
-    @Override
-    public String toString() {
-        return "EmployeeDTO{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", identityNumber='" + identityNumber + '\'' +
-                ", workplace='" + workplace + '\'' +
-                ", position='" + position + '\'' +
-                ", timeOfEntry=" + timeOfEntry +
-                ", beginningOfEmployment=" + beginningOfEmployment +
-                ", childrenList=" + childrenList +
-                ", holidayDTO=" + holidayDTO +
-                ", maxHolidayOfYear=" + maxHolidayOfYear +
-                '}';
-    }
 }

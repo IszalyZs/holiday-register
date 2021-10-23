@@ -50,11 +50,11 @@ public class ChildrenController {
         return ResponseEntity.ok(childrenService.findById(id));
     }
 
-    @PostMapping("/add")
+    @PostMapping("/employee/{id}/add")
     @Operation(summary = "save children", description = "save children")
-    public ResponseEntity<ChildrenDTO> save(@Valid @RequestBody ChildrenDTO childrenDTO, BindingResult bindingResult) {
-        System.out.println(childrenDTO);
+    public ResponseEntity<ChildrenDTO> save(@Valid @RequestBody ChildrenDTO childrenDTO, BindingResult bindingResult,@PathVariable("id") Long id) {
         if (childrenDTO.getId() != null) childrenDTO.setId(null);
+        childrenDTO.setEmployeeId(id);
         String logMessage = "Posted children entity contains error(s): ";
         bindingErrorHandler.bindingResult(bindingResult, logMessage, logger);
         return ResponseEntity.ok(childrenService.save(childrenDTO));

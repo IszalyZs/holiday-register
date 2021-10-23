@@ -22,13 +22,4 @@ public class HolidayDayDTO {
     private String year;
 
     private List<LocalDate> localDate = new ArrayList<>();
-
-    @Override
-    public String toString() {
-        return "HolidayDTO{" +
-                "id=" + id +
-                ", year=" + year +
-
-                '}';
-    }
 }

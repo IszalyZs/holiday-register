@@ -33,18 +33,10 @@ public class ChildrenDTO {
     private LocalDate birthDay;
 
     @ManyToOne
-    @JsonIgnoreProperties({"firstName","lastName","identityNumber","workplace","position","timeOfEntry","beginningOfEmployment","childrenList","maxHolidayOfYear","holidayDTO"})
+    //@JsonIgnoreProperties(value = {"firstName", "lastName", "identityNumber", "workplace", "position", "timeOfEntry", "beginningOfEmployment", "childrenList", "maxHolidayOfYear", "holidayDTO"})
+    @JsonIgnore
     @JoinColumn(name = "employeeDTO_id")
     private EmployeeDTO employeeDTO;
 
-    @Override
-    public String toString() {
-        return "ChildrenDTO{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", birthDay=" + birthDay +
-                ", employeeDTO=" + employeeDTO +
-                '}';
-    }
+    private Long employeeId;
 }

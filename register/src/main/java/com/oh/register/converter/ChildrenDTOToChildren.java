@@ -23,10 +23,15 @@ public class ChildrenDTOToChildren {
     }
 
     public Children getChildren(ChildrenDTO childrenDTO) {
-        Long id = childrenDTO.getEmployeeDTO().getId();
+        Children children;
+        Long id = childrenDTO.getEmployeeId();
         Optional<Employee> employeeOptional = employeeRepository.findById(id);
         if (employeeOptional.isEmpty())
             throw new RegisterException("The employee entity does not exist with id: " + id + "!");
-        return modelMapper.map(childrenDTO, Children.class);
+        else {
+            children = modelMapper.map(childrenDTO, Children.class);
+            children.setEmployee(employeeOptional.get());
+        }
+        return children;
     }
 }
