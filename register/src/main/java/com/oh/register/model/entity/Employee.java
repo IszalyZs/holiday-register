@@ -1,9 +1,11 @@
 package com.oh.register.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -48,9 +50,13 @@ public class Employee {
     private List<Children> childrenList = new ArrayList<>();
 
     @OneToOne
+    @JsonIgnore
     private Holiday holiday;
 
     @NotNull(message = "The maxHolidayOfYear of entry field can not be empty!")
+    @Min(value = 20, message = "The value cannot be less than 20!")
     private Integer maxHolidayOfYear;
+
+    private Integer sumHoliday;
 
 }

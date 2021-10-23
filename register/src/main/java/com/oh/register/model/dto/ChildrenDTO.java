@@ -2,7 +2,6 @@ package com.oh.register.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.oh.register.model.entity.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,10 +32,10 @@ public class ChildrenDTO {
     private LocalDate birthDay;
 
     @ManyToOne
-    //@JsonIgnoreProperties(value = {"firstName", "lastName", "identityNumber", "workplace", "position", "timeOfEntry", "beginningOfEmployment", "childrenList", "maxHolidayOfYear", "holidayDTO"})
     @JsonIgnore
     @JoinColumn(name = "employeeDTO_id")
     private EmployeeDTO employeeDTO;
 
+    @JsonIgnore
     private Long employeeId;
 }

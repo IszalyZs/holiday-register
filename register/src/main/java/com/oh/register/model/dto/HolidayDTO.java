@@ -1,13 +1,11 @@
 package com.oh.register.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.oh.register.model.entity.Employee;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
@@ -16,11 +14,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HolidayDTO {
+
     private Long id;
 
-    @OneToOne
-    @JsonIgnoreProperties
-    private EmployeeDTO employeeDTO;
+    @JsonIgnore
+    private Long employeeId;
 
     @NotNull(message = "The first name field can not be empty!")
     private LocalDate startDate;
