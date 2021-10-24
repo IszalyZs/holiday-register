@@ -1,6 +1,7 @@
 package com.oh.register.controller;
 
 import com.oh.register.config.BindingErrorHandler;
+import com.oh.register.exception.RegisterException;
 import com.oh.register.model.dto.HolidayDayDTO;
 import com.oh.register.service.HolidayDayService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,6 +49,7 @@ public class HolidayDayController {
     @GetMapping("/{id}/get")
     @Operation(summary = "list holiday day by id", description = "list holiday day by id")
     public ResponseEntity<HolidayDayDTO> findById(@PathVariable("id") Long id) {
+        if(id==null) throw new RegisterException("The given id must not be null!");
         return ResponseEntity.ok(holidayDayService.findById(id));
     }
 

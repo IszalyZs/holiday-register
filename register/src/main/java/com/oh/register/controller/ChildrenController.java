@@ -1,6 +1,7 @@
 package com.oh.register.controller;
 
 import com.oh.register.config.BindingErrorHandler;
+import com.oh.register.exception.RegisterException;
 import com.oh.register.model.dto.ChildrenDTO;
 import com.oh.register.service.ChildrenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,6 +48,7 @@ public class ChildrenController {
     @GetMapping("/{id}/get")
     @Operation(summary = "list children by id", description = "list children by id")
     public ResponseEntity<ChildrenDTO> findById(@PathVariable("id") Long id) {
+        if(id==null) throw new RegisterException("The given id must not be null!");
         return ResponseEntity.ok(childrenService.findById(id));
     }
 

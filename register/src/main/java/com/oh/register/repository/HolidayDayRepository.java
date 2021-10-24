@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HolidayDayRepository extends JpaRepository<HolidayDay,Long> {
+    HolidayDay findByYear(String year);
 }

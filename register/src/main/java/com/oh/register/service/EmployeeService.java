@@ -8,6 +8,7 @@ import com.oh.register.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,10 +49,23 @@ public class EmployeeService {
     }
 
     public Employee save(EmployeeDTO employeeDTO) {
+        checkToBeginningDate(employeeDTO.getBeginningOfEmployment(),employeeDTO.getDateOfEntry());
         return employeeRepository.save(employeeDTOToEmployee.getEmployee(employeeDTO));
     }
 
     public Employee update(EmployeeDTO employeeDTO) {
+        checkToBeginningDate(employeeDTO.getBeginningOfEmployment(),employeeDTO.getDateOfEntry());
         return employeeRepository.save(employeeDTOToEmployee.getEmployee(employeeDTO));
     }
+
+    public void saveWithEmployee(Employee employee) {
+        checkToBeginningDate(employee.getBeginningOfEmployment(),employee.getDateOfEntry());
+        employeeRepository.save(employee);
+    }
+
+    private void checkToBeginningDate(LocalDate beginningDate, LocalDate dateOfEntry) {
+        if (beginningDate.isBefore(dateOfEntry))
+            throw new RegisterException("The date of entry must be earlier than the beginning of employment!");
+    }
+
 }

@@ -42,7 +42,7 @@ public class EmployeeDTO {
     private String position;
 
     @NotNull(message = "The time of entry field can not be empty!")
-    private LocalDate timeOfEntry;
+    private LocalDate dateOfEntry;
 
     private LocalDate beginningOfEmployment;
 
@@ -56,5 +56,5 @@ public class EmployeeDTO {
 
     @NotNull(message = "The maxHolidayOfYear of entry field can not be empty!")
     @Min(value = 20, message = "The value cannot be less than 20!")
-    private Integer maxHolidayOfYear;
+    private Integer basicLeave;
 }

@@ -1,6 +1,7 @@
 package com.oh.register.controller;
 
 import com.oh.register.config.BindingErrorHandler;
+import com.oh.register.exception.RegisterException;
 import com.oh.register.model.dto.EmployeeDTO;
 import com.oh.register.model.entity.Employee;
 import com.oh.register.service.EmployeeService;
@@ -48,6 +49,7 @@ public class EmployeeController {
     @GetMapping("/{id}/get")
     @Operation(summary = "list employee by id", description = "list employee by id")
     public ResponseEntity<Employee> findById(@PathVariable("id") Long id) {
+        if (id == null) throw new RegisterException("The given id must not be null!");
         return ResponseEntity.ok(employeeService.findById(id));
     }
 
