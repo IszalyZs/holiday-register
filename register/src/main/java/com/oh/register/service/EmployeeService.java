@@ -49,22 +49,32 @@ public class EmployeeService {
     }
 
     public Employee save(EmployeeDTO employeeDTO) {
-        checkToBeginningDate(employeeDTO.getBeginningOfEmployment(),employeeDTO.getDateOfEntry());
-        return employeeRepository.save(employeeDTOToEmployee.getEmployee(employeeDTO));
+        checkToBeginningDate(employeeDTO.getBeginningOfEmployment(), employeeDTO.getDateOfEntry());
+        return employeeRepository.save(setBasicLeaveToEmployee(employeeDTO));
     }
 
+
     public Employee update(EmployeeDTO employeeDTO) {
-        checkToBeginningDate(employeeDTO.getBeginningOfEmployment(),employeeDTO.getDateOfEntry());
-        return employeeRepository.save(employeeDTOToEmployee.getEmployee(employeeDTO));
+        checkToBeginningDate(employeeDTO.getBeginningOfEmployment(), employeeDTO.getDateOfEntry());
+        return employeeRepository.save(setBasicLeaveToEmployee(employeeDTO));
     }
 
     public void saveWithEmployee(Employee employee) {
-        checkToBeginningDate(employee.getBeginningOfEmployment(),employee.getDateOfEntry());
+        checkToBeginningDate(employee.getBeginningOfEmployment(), employee.getDateOfEntry());
+        employee.setBasicLeave();
         employeeRepository.save(employee);
     }
 
+
+    private Employee setBasicLeaveToEmployee(EmployeeDTO employeeDTO) {
+        Employee employee = employeeDTOToEmployee.getEmployee(employeeDTO);
+        employee.setBasicLeave();
+        return employee;
+    }
+
+
     private void checkToBeginningDate(LocalDate beginningDate, LocalDate dateOfEntry) {
-        if (beginningDate.isBefore(dateOfEntry))
+        if (beginningDate != null && beginningDate.isBefore(dateOfEntry))
             throw new RegisterException("The date of entry must be earlier than the beginning of employment!");
     }
 

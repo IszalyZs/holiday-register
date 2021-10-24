@@ -41,7 +41,7 @@ public class HolidayDTOTOHoliday {
 
             System.out.println(sumBusinessDay);
             checkToSumBusinessDay(sumBusinessDay, employee);
-            employee.setSumHoliday(sumBusinessDay);
+            employee.setSumHoliday(employee.getSumHoliday()+sumBusinessDay);
             employeeRepository.save(employee);
             holiday = modelMapper.map(holidayDTO, Holiday.class);
             holiday.getLocalDateStorage().put(holidayDTO.getStartDate(), holidayDTO.getFinishDate());
@@ -56,7 +56,7 @@ public class HolidayDTOTOHoliday {
     }
 
     private void compareStartDateToBeginningDate(HolidayDTO holidayDTO, Employee employee) {
-        if (holidayDTO.getStartDate().isBefore(employee.getBeginningOfEmployment())) {
+        if (employee.getBeginningOfEmployment() != null && holidayDTO.getStartDate().isBefore(employee.getBeginningOfEmployment())) {
             throw new RegisterException("The beginning of employment must be earlier than the start date!");
         }
     }

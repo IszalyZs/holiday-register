@@ -35,6 +35,9 @@ public class EmployeeDTO {
     @Column(unique = true)
     private String identityNumber;
 
+    @NotNull(message = "The birth date field can not be empty!")
+    private LocalDate birthDate;
+
     @NotBlank(message = "The workplace field can not be empty!")
     private String workplace;
 
@@ -54,7 +57,4 @@ public class EmployeeDTO {
     @JsonIgnore
     private HolidayDTO holidayDTO;
 
-    @NotNull(message = "The maxHolidayOfYear of entry field can not be empty!")
-    @Min(value = 20, message = "The value cannot be less than 20!")
-    private Integer basicLeave;
 }
