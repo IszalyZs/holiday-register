@@ -32,6 +32,5 @@ public class Children {
 
     @ManyToOne
     @JsonIgnore
-    //@JoinColumn(name = "employee_id")
     private Employee employee;
 }

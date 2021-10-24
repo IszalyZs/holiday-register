@@ -68,6 +68,7 @@ public class SearchBusinessDay {
 
         HolidayDay holidayDay = holidayDayRepository.findByYear(String.valueOf(year));
         if(holidayDay==null) throw new RegisterException("You do not have holiday day database!");
+
         List<LocalDate> localDateList = holidayDay.getLocalDate();
 
         Predicate<LocalDate> isHoliday = date -> localDateList != null && localDateList.contains(date);
@@ -78,7 +79,7 @@ public class SearchBusinessDay {
         long daysBetween = ChronoUnit.DAYS.between(startDate, finishDate);
 
         return Stream.iterate(startDate, date -> date.plusDays(1))
-                .limit(daysBetween)
+                .limit(daysBetween+1)
                 .filter(isHoliday.or(isWeekend).negate())
                 .count();
     }
