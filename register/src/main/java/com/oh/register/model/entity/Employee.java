@@ -53,7 +53,7 @@ public class Employee {
     @JsonIgnoreProperties({"employee"})
     private List<Children> childrenList = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonIgnore
     private Holiday holiday;
 
@@ -67,7 +67,7 @@ public class Employee {
         LocalDate nowDate = LocalDate.now();
         LocalDate employeeBirthDate = this.getBirthDate();
         long age = ChronoUnit.YEARS.between(employeeBirthDate, nowDate);
-        if (age < 16) throw new RegisterException("Your age is very small!");
+        if (age < 16) throw new RegisterException("You are is very young for work!");
         else if (age >= 16 && age < 25) setBasicLeave(20);
         else if (age >= 25 && age < 28) setBasicLeave(21);
         else if (age >= 28 && age < 31) setBasicLeave(22);

@@ -6,7 +6,6 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -43,9 +42,6 @@ public class Holiday {
     private Map<LocalDate, LocalDate> localDateStorage = new HashMap<>();
 }
 /*
-@CollectionTable(name = "report_category", joinColumns = @JoinColumn(name = "report_id")) // choose the name of the DB table storing the Map<>
-    @MapKeyColumn(name = "fault_category_key") // choose the name of the DB column used to store the Map<> key
-    @Column(name = "fault_category_value")     // choose the name of the DB column used to store the Map<> value
 A munkatárshoz fel kell tudni venni, hogy mettől meddig van szabadságon (a szabadság első és utolsó napja legyen rögzítve).
 Lehessen törölni szabadságot úgy, hogy megadom a kezdő és a végdátumot (figyelem, ez feltétlen a szabadság teljes törlésével azonos).
 Üres intervallumot (a kezdő dátum nagyobb, mint a végdátum nem tárolunk).

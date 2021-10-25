@@ -11,6 +11,9 @@ import com.oh.register.repository.HolidayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -30,6 +33,7 @@ public class HolidayService {
         this.searchBusinessDay = searchBusinessDay;
     }
 
+    @Transactional
     public HolidayDTO save(HolidayDTO holidayDTO) {
         checkToStartDate(holidayDTO);
         Holiday holiday;
@@ -43,11 +47,26 @@ public class HolidayService {
         checkToSumBusinessDay(sumBusinessDay, employee);
 
         holiday = holidayDTOTOHoliday.getHoliday(holidayDTO);
+//        for (Map.Entry<LocalDate,LocalDate> entry: holiday.getLocalDateStorage().entrySet()) {
+//            if(entry.getKey().isEqual(holidayDTO.getStartDate()) && entry.getValue().isEqual(holidayDTO.getFinishDate()))
+//            {
+//                throw new RegisterException("This interval exists!");
+//            }
+//        }
+
+
         holiday.getLocalDateStorage().put(holidayDTO.getStartDate(), holidayDTO.getFinishDate());
         holiday.setEmployee(employee);
         Holiday savedHoliday = holidayRepository.save(holiday);
 
-        saveChangedEmployee(savedHoliday, sumBusinessDay);
+        //saveChangedEmployee(savedHoliday, sumBusinessDay);
+
+        Employee savedEmployee = savedHoliday.getEmployee();
+        savedEmployee.setHoliday(savedHoliday);
+        savedEmployee.setSumHoliday(savedEmployee.getSumHoliday() + sumBusinessDay);
+        employeeRepository.save(savedEmployee);
+
+
         return holidayToHolidayDTO.getHolidayDTO(savedHoliday);
     }
 
@@ -63,7 +82,11 @@ public class HolidayService {
 
         if (holidayByStartDate.equals(holidayByFinishDate)) {
             Long id = holidayByStartDate.getId();
-            holidayRepository.deleteById(id);
+            try {
+                holidayRepository.deleteById(id);
+            } catch (Exception ex) {
+                throw new RegisterException("No row with id: " + id + "!");
+            }
         } else throw new RegisterException("The specified interval does not exist!");
     }
 
@@ -79,12 +102,12 @@ public class HolidayService {
     }
 
 
-    private void saveChangedEmployee(Holiday savedHoliday, Long sumBusinessDay) {
-        Employee employee = savedHoliday.getEmployee();
-        employee.setHoliday(savedHoliday);
-        employee.setSumHoliday(employee.getSumHoliday() + sumBusinessDay);
-        employeeRepository.save(employee);
-    }
+//    private void saveChangedEmployee(Holiday savedHoliday, Long sumBusinessDay) {
+//        Employee employee = savedHoliday.getEmployee();
+//        employee.setHoliday(savedHoliday);
+//        employee.setSumHoliday(employee.getSumHoliday() + sumBusinessDay);
+//        employeeRepository.save(employee);
+//    }
 
     private void checkToSumBusinessDay(Long sumBusinessDay, Employee employee) {
         if (sumBusinessDay > (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()))

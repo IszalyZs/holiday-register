@@ -45,7 +45,7 @@ public class ChildrenService {
         try {
             Long employeeId = this.findById(id).getEmployeeId();
             childrenRepository.deleteById(id);
-            updateBasicLeave(null, employeeId);
+            employeeService.updateExtraLeave(null, employeeId, null);
         } catch (Exception exception) {
             throw new RegisterException("No children entity with id: " + id + "!");
         }
@@ -64,7 +64,11 @@ public class ChildrenService {
         Employee employee = employeeService.findById(childrenDTO.getEmployeeId());
         childrenDTO.setEmployeeDTO(employeeToEmployeeDTO.getEmployeeDTO(employee));
         Children children = childrenRepository.save(childrenDTOToChildren.getChildren(childrenDTO));
-        updateBasicLeave(childrenDTO, null);
+
+        employee.getChildrenList().add(children);
+        Employee employee1 = employeeService.saveWithEmployee(employee);
+
+        employeeService.updateExtraLeave(childrenDTO, null, null);
         return childrenToChildrenDTO.getChildrenDTO(children);
     }
 
@@ -79,21 +83,5 @@ public class ChildrenService {
         children.setEmployee(employee);
         Children savedChildren = childrenRepository.save(children);
         return childrenToChildrenDTO.getChildrenDTO(savedChildren);
-    }
-
-    private void updateBasicLeave(ChildrenDTO childrenDTO, Long employeeId) {
-        List<Children> childrenList = childrenRepository.findAll();
-        Employee employee;
-        if (employeeId == null)
-            employee = employeeService.findById(childrenDTO.getEmployeeId());
-        else employee = employeeService.findById(employeeId);
-        if (childrenList.size() == 1)
-            employee.setExtraLeave(2L);
-        else if (childrenList.size() == 2)
-            employee.setExtraLeave(4L);
-        else if (childrenList.size() > 2)
-            employee.setExtraLeave(7L);
-        else employee.setExtraLeave(0L);
-        employeeService.saveWithEmployee(employee);
     }
 }
