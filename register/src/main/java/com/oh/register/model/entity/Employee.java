@@ -53,9 +53,9 @@ public class Employee {
     @JsonIgnoreProperties({"employee"})
     private List<Children> childrenList = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "employee",cascade = CascadeType.ALL)
     @JsonIgnore
-    private Holiday holiday;
+    private List<Holiday> holiday=new ArrayList<>();
 
     private Integer basicLeave;
 

@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -35,15 +36,29 @@ public class SearchBusinessDay {
             year = startDate.getYear();
 
         List<Holiday> holidayList = holidayRepository.findAll();
-        if (holidayList.size() == 0)
-            return getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), year);
+        if (holidayList.size() != 0) {
+            Optional<Holiday> holidayOptional = holidayList.stream()
+                    .filter(date -> (date.getStartDate().isEqual(startDate) && date.getFinishDate().isEqual(holidayDTO.getFinishDate()) && date.getEmployee().getId() == holidayDTO.getEmployeeId()))
+                    .findAny();
+            if (holidayOptional.isPresent())
+                throw new RegisterException("This date interval from "+startDate+" to "+holidayDTO.getFinishDate() +" already exists for the worker!");
+            Optional<Holiday> optionalHoliday = holidayList.stream()
+                    .filter(date -> ((date.getStartDate().isEqual(startDate) || date.getFinishDate().isEqual(holidayDTO.getFinishDate())) && date.getEmployee().getId() == holidayDTO.getEmployeeId()))
+                    .findAny();
+            if(optionalHoliday.isPresent()) throw new RegisterException("The start date or the finish date already exists for the worker!");
+        }
 
-        Integer finalYear = year;
-        AtomicReference<Long> sumBusinessDay = new AtomicReference<>(0L);
-        holidayList.stream()
-                .filter(holiday -> holiday.getStartDate().getYear() == finalYear)
-                .forEach(item -> sumBusinessDay.updateAndGet(e -> e + getSumBusinessDay(item.getStartDate(), item.getFinishDate(), finalYear)));
-        return sumBusinessDay.get();
+
+        //        if (holidayList.size() == 0)
+//            return getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), year);
+//        Integer finalYear = year;
+//        AtomicReference<Long> sumBusinessDay = new AtomicReference<>(0L);
+//        holidayList.stream()
+//                .filter(holiday -> holiday.getStartDate().getYear() == finalYear)
+//                .forEach(item -> sumBusinessDay.updateAndGet(e -> e + getSumBusinessDay(item.getStartDate(), item.getFinishDate(), finalYear)));
+//        return sumBusinessDay.get();
+
+        return getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), year);
     }
 
     private Long getSumBusinessDay(LocalDate startDate, LocalDate finishDate, Integer year) {

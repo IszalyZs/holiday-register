@@ -18,7 +18,7 @@ public class Holiday {
     @Column(name = "holiday_id")
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     private Employee employee;
 
     private LocalDate startDate;

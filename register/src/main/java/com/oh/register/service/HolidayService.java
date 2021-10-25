@@ -35,22 +35,22 @@ public class HolidayService {
     @Transactional
     public HolidayDTO save(HolidayDTO holidayDTO) {
         checkToStartDate(holidayDTO);
-        Holiday holiday;
-        Long businessDays;
+
         Employee employee = getEmployeeById(holidayDTO);
 
         compareStartDateToBeginningDate(holidayDTO, employee);
 
-        businessDays = searchBusinessDay.getBusinessDay(holidayDTO, null, null);//*******************
+        Long businessDays = searchBusinessDay.getBusinessDay(holidayDTO, null, null);//*******************
 
         checkBusinessDays(businessDays, employee);
 
-        holiday = holidayDTOTOHoliday.getHoliday(holidayDTO);
+        Holiday holiday = holidayDTOTOHoliday.getHoliday(holidayDTO);
 
         Holiday savedHoliday = holidayRepository.save(holiday);
 
         Employee savedEmployee = savedHoliday.getEmployee();
-        //  savedEmployee.setHoliday(savedHoliday);//***************************************************
+
+
         savedEmployee.setSumHoliday(savedEmployee.getSumHoliday() + businessDays);
         employeeRepository.save(savedEmployee);
 
@@ -69,7 +69,7 @@ public class HolidayService {
         Holiday foundHoliday = holidays.stream().filter(holiday -> (
                 holiday.getStartDate().isEqual(holidayDTO.getStartDate()) &&
                         holiday.getFinishDate().isEqual(holidayDTO.getFinishDate()
-                        ))).findAny().orElseThrow(() -> new RegisterException("The specified interval does not exist for the employee with id:"+employeeId+"!"));
+                        ))).findAny().orElseThrow(() -> new RegisterException("The specified interval does not exist for the employee with id:" + employeeId + "!"));
 
         Long id = foundHoliday.getId();
         try {
