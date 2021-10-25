@@ -67,7 +67,8 @@ public class EmployeeService {
                 .collect(Collectors.toList());
         Employee employee = setBasicLeaveToEmployee(employeeDTO);
         employee.setChildrenList(childrenList);
-        return updateExtraLeave(null, null, employee);
+        employee.setSumHoliday(findById(employeeDTO.getId()).getSumHoliday());
+        return setExtraLeave(null, null, employee);
     }
 
     public Employee saveWithEmployee(Employee employee) {
@@ -90,7 +91,7 @@ public class EmployeeService {
     }
 
 
-    public Employee updateExtraLeave(ChildrenDTO childrenDTO, Long employeeId, Employee emp) {
+    public Employee setExtraLeave(ChildrenDTO childrenDTO, Long employeeId, Employee emp) {
         Employee employee;
         List<Children> childrenList;
         if (emp != null && childrenDTO == null && employeeId == null)
@@ -99,7 +100,7 @@ public class EmployeeService {
             employee = this.findById(childrenDTO.getEmployeeId());
         else if (emp == null && childrenDTO == null && employeeId != null)
             employee = this.findById(employeeId);
-        else throw new RegisterException("You have to give one argument and two null argument!");
+        else throw new RegisterException("You have to give one not null argument and two null argument to the setExtraLeave method!");
 
         childrenList = employee.getChildrenList();
         if (childrenList.size() == 1)
@@ -111,6 +112,4 @@ public class EmployeeService {
         else employee.setExtraLeave(0L);
         return this.saveWithEmployee(employee);
     }
-
-
 }

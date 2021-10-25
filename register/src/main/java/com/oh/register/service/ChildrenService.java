@@ -45,7 +45,7 @@ public class ChildrenService {
         try {
             Long employeeId = this.findById(id).getEmployeeId();
             childrenRepository.deleteById(id);
-            employeeService.updateExtraLeave(null, employeeId, null);
+            employeeService.setExtraLeave(null, employeeId, null);
         } catch (Exception exception) {
             throw new RegisterException("No children entity with id: " + id + "!");
         }
@@ -66,9 +66,9 @@ public class ChildrenService {
         Children children = childrenRepository.save(childrenDTOToChildren.getChildren(childrenDTO));
 
         employee.getChildrenList().add(children);
-        Employee employee1 = employeeService.saveWithEmployee(employee);
+        employeeService.saveWithEmployee(employee);
 
-        employeeService.updateExtraLeave(childrenDTO, null, null);
+        employeeService.setExtraLeave(childrenDTO, null, null);
         return childrenToChildrenDTO.getChildrenDTO(children);
     }
 
