@@ -66,7 +66,7 @@ public class ChildrenService {
         Children children = childrenRepository.save(childrenDTOToChildren.getChildren(childrenDTO));
 
         employee.getChildrenList().add(children);
-        employeeService.saveWithEmployee(employee);
+        employeeService.saveEmployee(employee);
 
         employeeService.setExtraLeave(childrenDTO, null, null);
         return childrenToChildrenDTO.getChildrenDTO(children);

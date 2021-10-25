@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,33 +36,22 @@ public class HolidayService {
     public HolidayDTO save(HolidayDTO holidayDTO) {
         checkToStartDate(holidayDTO);
         Holiday holiday;
-        Long sumBusinessDay;
+        Long businessDays;
         Employee employee = getEmployeeById(holidayDTO);
 
         compareStartDateToBeginningDate(holidayDTO, employee);
 
-        sumBusinessDay = searchBusinessDay.checkHolidayDateInterval(holidayDTO, null, null);
+        businessDays = searchBusinessDay.getBusinessDay(holidayDTO, null, null);//*******************
 
-        checkToSumBusinessDay(sumBusinessDay, employee);
+        checkBusinessDays(businessDays, employee);
 
         holiday = holidayDTOTOHoliday.getHoliday(holidayDTO);
-//        for (Map.Entry<LocalDate,LocalDate> entry: holiday.getLocalDateStorage().entrySet()) {
-//            if(entry.getKey().isEqual(holidayDTO.getStartDate()) && entry.getValue().isEqual(holidayDTO.getFinishDate()))
-//            {
-//                throw new RegisterException("This interval exists!");
-//            }
-//        }
 
-
-        holiday.getLocalDateStorage().put(holidayDTO.getStartDate(), holidayDTO.getFinishDate());
-        holiday.setEmployee(employee);
         Holiday savedHoliday = holidayRepository.save(holiday);
 
-        //saveChangedEmployee(savedHoliday, sumBusinessDay);
-
         Employee savedEmployee = savedHoliday.getEmployee();
-        savedEmployee.setHoliday(savedHoliday);
-        savedEmployee.setSumHoliday(savedEmployee.getSumHoliday() + sumBusinessDay);
+        //  savedEmployee.setHoliday(savedHoliday);//***************************************************
+        savedEmployee.setSumHoliday(savedEmployee.getSumHoliday() + businessDays);
         employeeRepository.save(savedEmployee);
 
 
@@ -76,18 +64,19 @@ public class HolidayService {
         Employee employee = getEmployeeById(holidayDTO);
         compareStartDateToBeginningDate(holidayDTO, employee);
 
-        Holiday holiday = holidayDTOTOHoliday.getHoliday(holidayDTO);
-        Holiday holidayByStartDate = holidayRepository.findByStartDate(holiday.getStartDate());
-        Holiday holidayByFinishDate = holidayRepository.findByFinishDate(holiday.getFinishDate());
+        Long employeeId = holidayDTO.getEmployeeId();
+        List<Holiday> holidays = holidayRepository.findByEmployee_Id(employeeId);
+        Holiday foundHoliday = holidays.stream().filter(holiday -> (
+                holiday.getStartDate().isEqual(holidayDTO.getStartDate()) &&
+                        holiday.getFinishDate().isEqual(holidayDTO.getFinishDate()
+                        ))).findAny().orElseThrow(() -> new RegisterException("The specified interval does not exist for the employee with id:"+employeeId+"!"));
 
-        if (holidayByStartDate.equals(holidayByFinishDate)) {
-            Long id = holidayByStartDate.getId();
-            try {
-                holidayRepository.deleteById(id);
-            } catch (Exception ex) {
-                throw new RegisterException("No row with id: " + id + "!");
-            }
-        } else throw new RegisterException("The specified interval does not exist!");
+        Long id = foundHoliday.getId();
+        try {
+            holidayRepository.deleteById(id);
+        } catch (Exception ex) {
+            throw new RegisterException("No row with id: " + id + "!");
+        }
     }
 
 
@@ -101,15 +90,7 @@ public class HolidayService {
         return employeeOptional.get();
     }
 
-
-//    private void saveChangedEmployee(Holiday savedHoliday, Long sumBusinessDay) {
-//        Employee employee = savedHoliday.getEmployee();
-//        employee.setHoliday(savedHoliday);
-//        employee.setSumHoliday(employee.getSumHoliday() + sumBusinessDay);
-//        employeeRepository.save(employee);
-//    }
-
-    private void checkToSumBusinessDay(Long sumBusinessDay, Employee employee) {
+    private void checkBusinessDays(Long sumBusinessDay, Employee employee) {
         if (sumBusinessDay > (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()))
             throw new RegisterException("The number of holidays available is less than the requested leave! You have only " + (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()) + " days!");
     }

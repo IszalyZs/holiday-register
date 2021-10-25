@@ -71,7 +71,7 @@ public class EmployeeService {
         return setExtraLeave(null, null, employee);
     }
 
-    public Employee saveWithEmployee(Employee employee) {
+    public Employee saveEmployee(Employee employee) {
         checkToBeginningDate(employee.getBeginningOfEmployment(), employee.getDateOfEntry());
         employee.setBasicLeave();
         return employeeRepository.save(employee);
@@ -110,6 +110,6 @@ public class EmployeeService {
         else if (childrenList.size() > 2)
             employee.setExtraLeave(7L);
         else employee.setExtraLeave(0L);
-        return this.saveWithEmployee(employee);
+        return this.saveEmployee(employee);
     }
 }

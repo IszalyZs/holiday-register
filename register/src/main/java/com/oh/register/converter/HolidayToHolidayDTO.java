@@ -17,6 +17,8 @@ public class HolidayToHolidayDTO {
     }
 
     public HolidayDTO getHolidayDTO(Holiday holiday) {
-        return modelMapper.map(holiday, HolidayDTO.class);
+        HolidayDTO holidayDTO = modelMapper.map(holiday, HolidayDTO.class);
+        holidayDTO.setEmployeeId(holiday.getEmployee().getId());
+        return holidayDTO;
     }
 }
