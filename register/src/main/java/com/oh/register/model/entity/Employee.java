@@ -53,15 +53,19 @@ public class Employee {
     @JsonIgnoreProperties({"employee"})
     private List<Children> childrenList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "employee",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Holiday> holiday=new ArrayList<>();
+    private List<Holiday> holiday = new ArrayList<>();
 
     private Integer basicLeave;
 
     private Long extraLeave = 0L;
 
     private Long sumHoliday = 0L;
+
+    private Long nextYearLeave = 0L;
+
+    private Long sumHolidayNextYear=0L;
 
     public void setBasicLeave() {
         LocalDate nowDate = LocalDate.now();

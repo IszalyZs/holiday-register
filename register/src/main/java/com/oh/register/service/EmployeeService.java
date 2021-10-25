@@ -55,13 +55,13 @@ public class EmployeeService {
     }
 
     public Employee save(EmployeeDTO employeeDTO) {
-        checkToBeginningDate(employeeDTO.getBeginningOfEmployment(), employeeDTO.getDateOfEntry());
+        checkingBeginningDate(employeeDTO.getBeginningOfEmployment(), employeeDTO.getDateOfEntry());
         return employeeRepository.save(setBasicLeaveToEmployee(employeeDTO));
     }
 
 
     public Employee update(EmployeeDTO employeeDTO) {
-        checkToBeginningDate(employeeDTO.getBeginningOfEmployment(), employeeDTO.getDateOfEntry());
+        checkingBeginningDate(employeeDTO.getBeginningOfEmployment(), employeeDTO.getDateOfEntry());
         List<Children> childrenList = childrenRepository.findAll().stream()
                 .filter(children -> children.getEmployee().getId() == employeeDTO.getId())
                 .collect(Collectors.toList());
@@ -72,8 +72,9 @@ public class EmployeeService {
     }
 
     public Employee saveEmployee(Employee employee) {
-        checkToBeginningDate(employee.getBeginningOfEmployment(), employee.getDateOfEntry());
+        checkingBeginningDate(employee.getBeginningOfEmployment(), employee.getDateOfEntry());
         employee.setBasicLeave();
+        employee.setNextYearLeave(employee.getBasicLeave()+employee.getExtraLeave());
         return employeeRepository.save(employee);
     }
 
@@ -81,11 +82,12 @@ public class EmployeeService {
     private Employee setBasicLeaveToEmployee(EmployeeDTO employeeDTO) {
         Employee employee = employeeDTOToEmployee.getEmployee(employeeDTO);
         employee.setBasicLeave();
+        employee.setNextYearLeave(employee.getBasicLeave()+employee.getExtraLeave());
         return employee;
     }
 
 
-    private void checkToBeginningDate(LocalDate beginningDate, LocalDate dateOfEntry) {
+    private void checkingBeginningDate(LocalDate beginningDate, LocalDate dateOfEntry) {
         if (beginningDate != null && beginningDate.isBefore(dateOfEntry))
             throw new RegisterException("The date of entry must be earlier than the beginning of employment!");
     }
@@ -100,7 +102,8 @@ public class EmployeeService {
             employee = this.findById(childrenDTO.getEmployeeId());
         else if (emp == null && childrenDTO == null && employeeId != null)
             employee = this.findById(employeeId);
-        else throw new RegisterException("You have to give one not null argument and two null argument to the setExtraLeave method!");
+        else
+            throw new RegisterException("You have to give one not null argument and two null argument to the setExtraLeave method!");
 
         childrenList = employee.getChildrenList();
         if (childrenList.size() == 1)
@@ -110,6 +113,9 @@ public class EmployeeService {
         else if (childrenList.size() > 2)
             employee.setExtraLeave(7L);
         else employee.setExtraLeave(0L);
+
+        employee.setNextYearLeave(employee.getBasicLeave() + employee.getExtraLeave());
+
         return this.saveEmployee(employee);
     }
 }
