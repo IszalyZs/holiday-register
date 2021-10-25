@@ -15,7 +15,6 @@ import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -31,24 +30,10 @@ public class SearchBusinessDay {
     }
 
     public Long getBusinessDay(HolidayDTO holidayDTO, Integer year, Month month) {
-        LocalDate startDate = holidayDTO.getStartDate();
         if (year == null)
-            year = startDate.getYear();
+            year = holidayDTO.getStartDate().getYear();
 
-        List<Holiday> holidayList = holidayRepository.findAll();
-        if (holidayList.size() != 0) {
-            Optional<Holiday> holidayOptional = holidayList.stream()
-                    .filter(date -> (date.getStartDate().isEqual(startDate) && date.getFinishDate().isEqual(holidayDTO.getFinishDate()) && date.getEmployee().getId() == holidayDTO.getEmployeeId()))
-                    .findAny();
-            if (holidayOptional.isPresent())
-                throw new RegisterException("This date interval from "+startDate+" to "+holidayDTO.getFinishDate() +" already exists for the worker!");
-            Optional<Holiday> optionalHoliday = holidayList.stream()
-                    .filter(date -> ((date.getStartDate().isEqual(startDate) || date.getFinishDate().isEqual(holidayDTO.getFinishDate())) && date.getEmployee().getId() == holidayDTO.getEmployeeId()))
-                    .findAny();
-            if(optionalHoliday.isPresent()) throw new RegisterException("The start date or the finish date already exists for the worker!");
-        }
-
-
+        checkDateInterval(holidayDTO);
         //        if (holidayList.size() == 0)
 //            return getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), year);
 //        Integer finalYear = year;
@@ -59,6 +44,40 @@ public class SearchBusinessDay {
 //        return sumBusinessDay.get();
 
         return getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), year);
+    }
+
+    private void checkDateInterval(HolidayDTO holidayDTO) {
+
+        List<Holiday> holidayList = holidayRepository.findAll();
+
+        if (holidayList.size() != 0) {
+            Optional<Holiday> holidayOptional = holidayList.stream()
+                    .filter(date -> (date.getStartDate().isEqual(holidayDTO.getStartDate()) && date.getFinishDate().isEqual(holidayDTO.getFinishDate()) && date.getEmployee().getId() == holidayDTO.getEmployeeId()))
+                    .findAny();
+            if (holidayOptional.isPresent())
+                throw new RegisterException("This date interval from " + holidayDTO.getStartDate() + " to " + holidayDTO.getFinishDate() + " already exists for the worker!");
+
+            Optional<Holiday> optionalHoliday = holidayList.stream()
+                    .filter(date -> ((date.getStartDate().isEqual(holidayDTO.getStartDate())
+                            || date.getFinishDate().isEqual(holidayDTO.getFinishDate())
+                            || date.getStartDate().isEqual(holidayDTO.getFinishDate())
+                            || date.getFinishDate().isEqual(holidayDTO.getStartDate()))
+                            && date.getEmployee().getId() == holidayDTO.getEmployeeId()))
+                    .findAny();
+            if (optionalHoliday.isPresent())
+                throw new RegisterException("The start date or the finish date already exists for the worker!");
+
+            holidayList.stream().forEach(date -> checkDateOverlap(date, holidayDTO));
+        }
+    }
+
+    private void checkDateOverlap(Holiday date, HolidayDTO holidayDTO) {
+        LocalDate startDate = date.getStartDate();
+        LocalDate finishDate = date.getFinishDate();
+        if (((holidayDTO.getStartDate().isAfter(startDate) && holidayDTO.getStartDate().isBefore(finishDate))
+                || (holidayDTO.getFinishDate().isAfter(startDate) && holidayDTO.getFinishDate().isBefore(finishDate)))
+        && date.getEmployee().getId() == holidayDTO.getEmployeeId())
+            throw new RegisterException("The interval should not be overlap with an existing interval!");
     }
 
     private Long getSumBusinessDay(LocalDate startDate, LocalDate finishDate, Integer year) {
