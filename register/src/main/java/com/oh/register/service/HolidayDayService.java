@@ -29,7 +29,7 @@ public class HolidayDayService {
     public List<HolidayDayDTO> findAll() {
         List<HolidayDay> holidayDays = holidayDayRepository.findAll();
         if (holidayDays.size() == 0) {
-            throw new RegisterException("The holiday entities do not exist!");
+            throw new RegisterException("The holiday entities don't exist!");
         }
         return holidayDays.stream().map(holidayDayToHolidayDTODay::getHolidayDTO).collect(Collectors.toList());
     }
@@ -49,7 +49,7 @@ public class HolidayDayService {
             HolidayDay holidayDay = optionalHoliday.get();
             return holidayDayToHolidayDTODay.getHolidayDTO(holidayDay);
         }
-        throw new RegisterException("The holiday entity does not exist with id: " + id + "!");
+        throw new RegisterException("The holiday entity doesn't exist with id: " + id + "!");
     }
 
     public HolidayDayDTO save(HolidayDayDTO holidayDayDTO) {

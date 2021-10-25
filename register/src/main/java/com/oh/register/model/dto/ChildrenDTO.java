@@ -20,14 +20,14 @@ import java.time.LocalDate;
 public class ChildrenDTO {
     private Long id;
 
-    @NotBlank(message = "The first name field can not be empty!")
+    @NotBlank(message = "The first name field can't be empty!")
     private String firstName;
 
-    @NotBlank(message = "The last name field can not be empty!")
+    @NotBlank(message = "The last name field can't be empty!")
     private String lastName;
 
     @Past(message = "Date of birth must be less than today!")
-    @NotNull(message = "The birthday field can not be empty!")
+    @NotNull(message = "The birthday field can't be empty!")
     private LocalDate birthDay;
 
     @ManyToOne

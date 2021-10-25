@@ -20,9 +20,9 @@ public class HolidayDTO {
     @JsonIgnore
     private Long employeeId;
 
-    @NotNull(message = "The first name field can not be empty!")
+    @NotNull(message = "The first name field can't be empty!")
     private LocalDate startDate;
 
-    @NotNull(message = "The first name field can not be empty!")
+    @NotNull(message = "The first name field can't be empty!")
     private LocalDate finishDate;
 }

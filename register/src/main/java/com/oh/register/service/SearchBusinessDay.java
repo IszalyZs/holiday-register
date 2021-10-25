@@ -37,23 +37,23 @@ public class SearchBusinessDay {
             year = holidayDTO.getStartDate().getYear();
 
         checkingDateInterval(holidayDTO);
-        //        if (holidayList.size() == 0)
-//            return getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), year);
-//        Integer finalYear = year;
-//        AtomicReference<Long> sumBusinessDay = new AtomicReference<>(0L);
-//        holidayList.stream()
-//                .filter(holiday -> holiday.getStartDate().getYear() == finalYear)
-//                .forEach(item -> sumBusinessDay.updateAndGet(e -> e + getSumBusinessDay(item.getStartDate(), item.getFinishDate(), finalYear)));
-//        return sumBusinessDay.get();
+
         if ((holidayDTO.getStartDate().getYear() == holidayDTO.getFinishDate().getYear()) && holidayDTO.getFinishDate().getYear() == LocalDate.now().getYear())
             return getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), year);
         else if ((holidayDTO.getStartDate().getYear() != holidayDTO.getFinishDate().getYear()) && holidayDTO.getFinishDate().getYear() == (LocalDate.now().getYear() + 1)) {
             LocalDate localDate = LocalDate.of(holidayDTO.getStartDate().getYear(), 12, 31);
             Long sumBusinessDayThisYear = getSumBusinessDay(holidayDTO.getStartDate(), localDate, holidayDTO.getStartDate().getYear());
             Long sumBusinessDayNextYear = getSumBusinessDay(LocalDate.of(holidayDTO.getFinishDate().getYear(), 01, 01), holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
+            checkingThisYearNumberOfHoliday(sumBusinessDayThisYear, holidayDTO);
             checkingNextYearNumberOfHoliday(sumBusinessDayNextYear, holidayDTO);
             return sumBusinessDayThisYear;
         } else throw new RegisterException("Invalid date interval!");
+    }
+
+    private void checkingThisYearNumberOfHoliday(Long sumBusinessDayThisYear, HolidayDTO holidayDTO) {
+        Employee employee = employeeService.findById(holidayDTO.getEmployeeId());
+        if ((employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday() - sumBusinessDayThisYear) <= 0)
+            throw new RegisterException("The number of holidays available is less than the requested leave! You have only " + (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()) + " days!");
     }
 
     private void checkingNextYearNumberOfHoliday(Long sumBusinessDayNextYear, HolidayDTO holidayDTO) {

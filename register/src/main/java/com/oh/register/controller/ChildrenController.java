@@ -49,7 +49,7 @@ public class ChildrenController {
     @GetMapping("/{id}/get")
     @Operation(summary = "list children by id", description = "list children by id")
     public ResponseEntity<ChildrenDTO> findById(@PathVariable("id") Long id) {
-        if(id==null) throw new RegisterException("The given id must not be null!");
+        if(id==null) throw new RegisterException("The given id mustn't be null!");
         return ResponseEntity.ok(childrenService.findById(id));
     }
 

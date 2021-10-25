@@ -33,7 +33,7 @@ public class EmployeeService {
     public List<Employee> findAll() {
         List<Employee> employees = employeeRepository.findAll();
         if (employees.size() == 0) {
-            throw new RegisterException("The employee entities do not exist!");
+            throw new RegisterException("The employee entities don't exist!");
         }
         return employees;
     }
@@ -51,7 +51,7 @@ public class EmployeeService {
         if (employeeOptional.isPresent()) {
             return employeeOptional.get();
         }
-        throw new RegisterException("The employee entity does not exist with id: " + id + "!");
+        throw new RegisterException("The employee entity doesn't exist with id: " + id + "!");
     }
 
     public Employee save(EmployeeDTO employeeDTO) {

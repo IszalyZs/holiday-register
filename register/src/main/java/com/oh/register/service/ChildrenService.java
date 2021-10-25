@@ -36,7 +36,7 @@ public class ChildrenService {
     public List<ChildrenDTO> findAll() {
         List<Children> childrenList = childrenRepository.findAll();
         if (childrenList.size() == 0) {
-            throw new RegisterException("The children entities do not exist!");
+            throw new RegisterException("The children entities don't exist!");
         }
         return childrenList.stream().map(childrenToChildrenDTO::getChildrenDTO).collect(Collectors.toList());
     }
@@ -57,7 +57,7 @@ public class ChildrenService {
             Children children = optionalChildren.get();
             return childrenToChildrenDTO.getChildrenDTO(children);
         }
-        throw new RegisterException("The children entity does not exist with id: " + id + "!");
+        throw new RegisterException("The children entity doesn't exist with id: " + id + "!");
     }
 
     public ChildrenDTO save(ChildrenDTO childrenDTO) {

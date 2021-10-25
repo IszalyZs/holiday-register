@@ -25,26 +25,26 @@ import java.util.List;
 public class EmployeeDTO {
     private Long id;
 
-    @NotBlank(message = "The first name field can not be empty!")
+    @NotBlank(message = "The first name field can't be empty!")
     private String firstName;
 
-    @NotBlank(message = "The last name field can not be empty!")
+    @NotBlank(message = "The last name field can't be empty!")
     private String lastName;
 
     @Pattern(regexp = "[0-9]{9}", message = "The identity number length should be exactly 9 numbers!")
     @Column(unique = true)
     private String identityNumber;
 
-    @NotNull(message = "The birth date field can not be empty!")
+    @NotNull(message = "The birth date field can't be empty!")
     private LocalDate birthDate;
 
-    @NotBlank(message = "The workplace field can not be empty!")
+    @NotBlank(message = "The workplace field can't be empty!")
     private String workplace;
 
-    @NotBlank(message = "The position field can not be empty!")
+    @NotBlank(message = "The position field can't be empty!")
     private String position;
 
-    @NotNull(message = "The time of entry field can not be empty!")
+    @NotNull(message = "The time of entry field can't be empty!")
     private LocalDate dateOfEntry;
 
     private LocalDate beginningOfEmployment;

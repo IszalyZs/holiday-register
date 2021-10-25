@@ -69,7 +69,7 @@ public class HolidayService {
         Holiday foundHoliday = holidays.stream().filter(holiday -> (
                 holiday.getStartDate().isEqual(holidayDTO.getStartDate()) &&
                         holiday.getFinishDate().isEqual(holidayDTO.getFinishDate()
-                        ))).findAny().orElseThrow(() -> new RegisterException("The specified interval does not exist for the employee with id:" + employeeId + "!"));
+                        ))).findAny().orElseThrow(() -> new RegisterException("The specified interval doesn't exist for the employee with id:" + employeeId + "!"));
 
         Long id = foundHoliday.getId();
         try {
@@ -85,7 +85,7 @@ public class HolidayService {
 
         Optional<Employee> employeeOptional = employeeRepository.findById(id);
         if (employeeOptional.isEmpty())
-            throw new RegisterException("The employee entity does not exist with id: " + id + "!");
+            throw new RegisterException("The employee entity doesn't exist with id: " + id + "!");
 
         return employeeOptional.get();
     }

@@ -49,7 +49,7 @@ public class HolidayDayController {
     @GetMapping("/{id}/get")
     @Operation(summary = "list holiday day by id", description = "list holiday day by id")
     public ResponseEntity<HolidayDayDTO> findById(@PathVariable("id") Long id) {
-        if(id==null) throw new RegisterException("The given id must not be null!");
+        if(id==null) throw new RegisterException("The given id mustn't be null!");
         return ResponseEntity.ok(holidayDayService.findById(id));
     }
 
