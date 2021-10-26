@@ -66,7 +66,7 @@ public class HolidayController {
         holidayDTO.setFinishDate(end);
         holidayDTO.setEmployeeId(id);
         Long allBusinessDayByDateInterval = holidayService.findAllBusinessDayByDateInterval(holidayDTO);
-        String response = String.format("The employee with id:%d worked %d days!", id, allBusinessDayByDateInterval);
+        String response = String.format("The employee with id:%d worked %d days from %s to %s!", id, allBusinessDayByDateInterval, holidayDTO.getStartDate().toString(), holidayDTO.getFinishDate().toString());
         return ResponseEntity.ok(response);
     }
 

@@ -36,6 +36,7 @@ public class SearchBusinessDay {
         if (year == null)
             year = holidayDTO.getStartDate().getYear();
 
+
         checkingDateInterval(holidayDTO);
 
         if ((holidayDTO.getStartDate().getYear() == holidayDTO.getFinishDate().getYear())
