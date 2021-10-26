@@ -9,6 +9,7 @@ import com.oh.register.repository.HolidayDayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,7 +43,6 @@ public class HolidayDayService {
         }
     }
 
-
     public HolidayDayDTO findById(Long id) {
         Optional<HolidayDay> optionalHoliday = holidayDayRepository.findById(id);
         if (optionalHoliday.isPresent()) {
@@ -53,12 +53,24 @@ public class HolidayDayService {
     }
 
     public HolidayDayDTO save(HolidayDayDTO holidayDayDTO) {
-        HolidayDay holidayDay = holidayDayRepository.save(holidayDayDTOToHolidayDay.getHoliday(holidayDayDTO));
+        HolidayDay holidaydays = holidayDayDTOToHolidayDay.getHoliday(holidayDayDTO);
+        checkingYear(holidayDayDTO);
+        HolidayDay holidayDay = holidayDayRepository.save(holidaydays);
         return holidayDayToHolidayDTODay.getHolidayDTO(holidayDay);
     }
 
     public HolidayDayDTO update(HolidayDayDTO holidayDayDTO) {
-        HolidayDay holidayDay = holidayDayRepository.save(holidayDayDTOToHolidayDay.getHoliday(holidayDayDTO));
+        HolidayDay holidaydays = holidayDayDTOToHolidayDay.getHoliday(holidayDayDTO);
+        checkingYear(holidayDayDTO);
+        HolidayDay holidayDay = holidayDayRepository.save(holidaydays);
         return holidayDayToHolidayDTODay.getHolidayDTO(holidayDay);
+    }
+
+    private void checkingYear(HolidayDayDTO holidayDayDTO) {
+        HolidayDay holidaydays = holidayDayDTOToHolidayDay.getHoliday(holidayDayDTO);
+        List<LocalDate> localDateList = holidaydays.getLocalDate().stream().filter(holidays -> holidays.getYear() != Integer.parseInt(holidayDayDTO.getYear())).collect(Collectors.toList());
+        if (localDateList.size() > 0)
+            throw new RegisterException("The list includes different years! You have to use " + holidayDayDTO.getYear());
+
     }
 }
