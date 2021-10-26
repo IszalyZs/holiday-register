@@ -203,4 +203,14 @@ public class HolidayService {
         holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
         return sumBusinessDay - sumHoliday.get();
     }
+
+    public Long getHolidayByDateInterval(HolidayDTO holidayDTO) {
+        checkingBeginningOfEmploymentDate(holidayDTO);
+
+        AtomicReference<Long> sumHoliday = new AtomicReference<>(0L);//****************************************************************************
+        List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
+
+        holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
+        return sumHoliday.get();
+    }
 }

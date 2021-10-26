@@ -50,7 +50,7 @@ public class SearchBusinessDay {
             checkingThisYearNumberOfHoliday(sumBusinessDayThisYear, holidayDTO);
             checkingNextYearNumberOfHoliday(sumBusinessDayNextYear, holidayDTO);
             return sumBusinessDayThisYear;
-        } else throw new RegisterException("Invalid date interval!");
+        } else throw new RegisterException("Invalid date interval! Next year's leave is not allowed");
     }
 
     private void checkingThisYearNumberOfHoliday(Long sumBusinessDayThisYear, HolidayDTO holidayDTO) {
