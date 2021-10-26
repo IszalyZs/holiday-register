@@ -99,7 +99,7 @@ public class SearchBusinessDay {
             throw new RegisterException("The interval shouldn't be overlap with an existing interval!");
     }
 
-    private Long getSumBusinessDay(LocalDate startDate, LocalDate finishDate, Integer year) {
+    public Long getSumBusinessDay(LocalDate startDate, LocalDate finishDate, Integer year) {
 
         HolidayDay holidayDay = holidayDayRepository.findByYear(String.valueOf(year));
         if (holidayDay == null) throw new RegisterException("You don't have holiday day database for "+year+"!");

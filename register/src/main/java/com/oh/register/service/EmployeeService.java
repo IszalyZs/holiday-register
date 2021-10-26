@@ -68,6 +68,7 @@ public class EmployeeService {
         Employee employee = setBasicLeaveToEmployee(employeeDTO);
         employee.setChildrenList(childrenList);
         employee.setSumHoliday(findById(employeeDTO.getId()).getSumHoliday());
+        employee.setSumHolidayNextYear(findById(employeeDTO.getId()).getSumHolidayNextYear());
         return setExtraLeave(null, null, employee);
     }
 

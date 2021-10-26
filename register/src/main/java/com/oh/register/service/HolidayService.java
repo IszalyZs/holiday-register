@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,14 +70,29 @@ public class HolidayService {
         Holiday foundHoliday = holidays.stream().filter(holiday -> (
                 holiday.getStartDate().isEqual(holidayDTO.getStartDate()) &&
                         holiday.getFinishDate().isEqual(holidayDTO.getFinishDate()
-                        ))).findAny().orElseThrow(() -> new RegisterException("The specified interval doesn't exist for the employee with id:" + employeeId + "!"));
+                        ))).findAny().orElseThrow(() -> new RegisterException("The specified date interval doesn't exist for the employee with id:" + employeeId + "!"));
 
         Long id = foundHoliday.getId();
         try {
             holidayRepository.deleteById(id);
+            addDeletedDaysToEmployee(holidayDTO);
         } catch (Exception ex) {
             throw new RegisterException("No row with id: " + id + "!");
         }
+    }
+
+    private void addDeletedDaysToEmployee(HolidayDTO holidayDTO) {
+        Employee employee = getEmployeeById(holidayDTO);
+        if (holidayDTO.getStartDate().getYear() == holidayDTO.getFinishDate().getYear()) {
+            Long sumBusinessDayThisYear = searchBusinessDay.getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), holidayDTO.getStartDate().getYear());
+            employee.setSumHoliday(employee.getSumHoliday() - sumBusinessDayThisYear);
+        } else {
+            Long sumBusinessDayThisYear = searchBusinessDay.getSumBusinessDay(holidayDTO.getStartDate(), LocalDate.of(holidayDTO.getStartDate().getYear(), 12, 31), holidayDTO.getStartDate().getYear());
+            Long sumBusinessDayNextYear = searchBusinessDay.getSumBusinessDay(LocalDate.of(holidayDTO.getFinishDate().getYear(), 01, 01), holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
+            employee.setSumHoliday(employee.getSumHoliday() - sumBusinessDayThisYear);
+            employee.setSumHolidayNextYear(employee.getSumHolidayNextYear() - sumBusinessDayNextYear);
+        }
+        employeeRepository.save(employee);
     }
 
 
