@@ -49,9 +49,9 @@ public class HolidayService {
 
         compareStartDateToBeginningDate(holidayDTO, employee);
 
-        Long businessDays = searchBusinessDay.getBusinessDay(holidayDTO, null, null);//*******************
+        Long businessDays = searchBusinessDay.getBusinessDay(holidayDTO);
 
-        checkingBusenessDays(businessDays, employee);
+        checkingBusinessDay(businessDays, employee);
 
         Holiday holiday = holidayDTOTOHoliday.getHoliday(holidayDTO);
 
@@ -114,7 +114,7 @@ public class HolidayService {
         return employeeOptional.get();
     }
 
-    private void checkingBusenessDays(Long sumBusinessDay, Employee employee) {
+    private void checkingBusinessDay(Long sumBusinessDay, Employee employee) {
         if (sumBusinessDay > (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()))
             throw new RegisterException("The number of holidays available is less than the requested leave! You have only " + (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()) + " days!");
     }

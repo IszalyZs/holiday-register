@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -32,10 +31,8 @@ public class SearchBusinessDay {
         this.employeeService = employeeService;
     }
 
-    public Long getBusinessDay(HolidayDTO holidayDTO, Integer year, Month month) {
-        if (year == null)
-            year = holidayDTO.getStartDate().getYear();
-
+    public Long getBusinessDay(HolidayDTO holidayDTO) {
+        Integer year = holidayDTO.getStartDate().getYear();
 
         checkingDateInterval(holidayDTO);
 
