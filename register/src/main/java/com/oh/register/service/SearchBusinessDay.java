@@ -49,15 +49,7 @@ public class SearchBusinessDay {
             checkingThisYearNumberOfHoliday(sumBusinessDayThisYear, holidayDTO);
             checkingNextYearNumberOfHoliday(sumBusinessDayNextYear, holidayDTO);
             return sumBusinessDayThisYear;
-        } else if ((holidayDTO.getStartDate().getYear() == (LocalDate.now().getYear() + 1))
-                && (holidayDTO.getFinishDate().getYear() == (LocalDate.now().getYear() + 1))
-                && (holidayDTO.getFinishDate().getMonth().getValue() == 3)) {
-            {
-                Long sumBusinessDayNextYear = getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
-                checkingNextYearNumberOfHoliday(sumBusinessDayNextYear, holidayDTO);
-            }
-        }
-        throw new RegisterException("Invalid date interval!");
+        } else throw new RegisterException("Invalid date interval!");
     }
 
     private void checkingThisYearNumberOfHoliday(Long sumBusinessDayThisYear, HolidayDTO holidayDTO) {
@@ -127,5 +119,24 @@ public class SearchBusinessDay {
                 .limit(daysBetween + 1)
                 .filter(isHoliday.or(isWeekend).negate())
                 .count();
+    }
+
+    public boolean isBusinessDay(LocalDate localDate) {
+        HolidayDay holidayDay = holidayDayRepository.findByYear(String.valueOf(localDate.getYear()));
+        if (holidayDay == null)
+            throw new RegisterException("You don't have holiday day database for " + localDate.getYear() + "!");
+
+        List<LocalDate> localDateList = holidayDay.getLocalDate();
+
+        Predicate<LocalDate> isHoliday = date -> localDateList != null && localDateList.contains(date);
+
+        Predicate<LocalDate> isWeekend = date -> date.getDayOfWeek() == DayOfWeek.SATURDAY
+                || date.getDayOfWeek() == DayOfWeek.SUNDAY;
+
+        Optional<LocalDate> localDateOptional = Stream.iterate(localDate, date -> date.plusDays(1))
+                .limit(1)
+                .filter(isHoliday.or(isWeekend).negate())
+                .findAny();
+        return localDateOptional.isPresent();
     }
 }

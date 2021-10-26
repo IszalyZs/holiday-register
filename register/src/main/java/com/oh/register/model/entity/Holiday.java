@@ -3,6 +3,7 @@ package com.oh.register.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity(name = "Holiday")
@@ -21,7 +22,9 @@ public class Holiday {
     @ManyToOne
     private Employee employee;
 
+    @NotNull(message = "The start date field can't be empty!")
     private LocalDate startDate;
 
+    @NotNull(message = "The finish date field can't be empty!")
     private LocalDate finishDate;
 }
