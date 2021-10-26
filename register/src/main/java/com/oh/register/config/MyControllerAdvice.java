@@ -29,7 +29,7 @@ public class MyControllerAdvice {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleOtherErrors(HttpMessageNotReadableException formatException) {
+    public ResponseEntity<String> messageNotReadableExceptionHandler(HttpMessageNotReadableException formatException) {
         String error = Objects.requireNonNull(formatException.getRootCause()).getMessage();
         log.error(error);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);

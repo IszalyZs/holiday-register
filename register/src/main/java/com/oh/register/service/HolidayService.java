@@ -35,7 +35,7 @@ public class HolidayService {
 
     @Transactional
     public HolidayDTO save(HolidayDTO holidayDTO) {
-        checkToStartDate(holidayDTO);
+        checkingStartDate(holidayDTO);
 
         Employee employee = getEmployeeById(holidayDTO);
 
@@ -43,7 +43,7 @@ public class HolidayService {
 
         Long businessDays = searchBusinessDay.getBusinessDay(holidayDTO, null, null);//*******************
 
-        checkBusinessDays(businessDays, employee);
+        checkingBusenessDays(businessDays, employee);
 
         Holiday holiday = holidayDTOTOHoliday.getHoliday(holidayDTO);
 
@@ -61,7 +61,7 @@ public class HolidayService {
 
 
     public void delete(HolidayDTO holidayDTO) {
-        checkToStartDate(holidayDTO);
+        checkingStartDate(holidayDTO);
         Employee employee = getEmployeeById(holidayDTO);
         compareStartDateToBeginningDate(holidayDTO, employee);
 
@@ -88,7 +88,7 @@ public class HolidayService {
             employee.setSumHoliday(employee.getSumHoliday() - sumBusinessDayThisYear);
         } else {
             Long sumBusinessDayThisYear = searchBusinessDay.getSumBusinessDay(holidayDTO.getStartDate(), LocalDate.of(holidayDTO.getStartDate().getYear(), 12, 31), holidayDTO.getStartDate().getYear());
-            Long sumBusinessDayNextYear = searchBusinessDay.getSumBusinessDay(LocalDate.of(holidayDTO.getFinishDate().getYear(), 01, 01), holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
+            Long sumBusinessDayNextYear = searchBusinessDay.getSumBusinessDay(LocalDate.of(holidayDTO.getFinishDate().getYear(), 1, 1), holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
             employee.setSumHoliday(employee.getSumHoliday() - sumBusinessDayThisYear);
             employee.setSumHolidayNextYear(employee.getSumHolidayNextYear() - sumBusinessDayNextYear);
         }
@@ -106,7 +106,7 @@ public class HolidayService {
         return employeeOptional.get();
     }
 
-    private void checkBusinessDays(Long sumBusinessDay, Employee employee) {
+    private void checkingBusenessDays(Long sumBusinessDay, Employee employee) {
         if (sumBusinessDay > (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()))
             throw new RegisterException("The number of holidays available is less than the requested leave! You have only " + (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()) + " days!");
     }
@@ -119,7 +119,7 @@ public class HolidayService {
         }
     }
 
-    private void checkToStartDate(HolidayDTO holidayDTO) {
+    private void checkingStartDate(HolidayDTO holidayDTO) {
         if (holidayDTO.getStartDate().isAfter(holidayDTO.getFinishDate()))
             throw new RegisterException("The start date must be earlier than the finish date!");
     }

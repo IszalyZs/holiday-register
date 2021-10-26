@@ -38,22 +38,32 @@ public class SearchBusinessDay {
 
         checkingDateInterval(holidayDTO);
 
-        if ((holidayDTO.getStartDate().getYear() == holidayDTO.getFinishDate().getYear()) && holidayDTO.getFinishDate().getYear() == LocalDate.now().getYear())
+        if ((holidayDTO.getStartDate().getYear() == holidayDTO.getFinishDate().getYear())
+                && holidayDTO.getFinishDate().getYear() == LocalDate.now().getYear())
             return getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), year);
-        else if ((holidayDTO.getStartDate().getYear() != holidayDTO.getFinishDate().getYear()) && holidayDTO.getFinishDate().getYear() == (LocalDate.now().getYear() + 1)) {
+        else if ((holidayDTO.getStartDate().getYear() != holidayDTO.getFinishDate().getYear())
+                && holidayDTO.getFinishDate().getYear() == (LocalDate.now().getYear() + 1)) {
             LocalDate localDate = LocalDate.of(holidayDTO.getStartDate().getYear(), 12, 31);
             Long sumBusinessDayThisYear = getSumBusinessDay(holidayDTO.getStartDate(), localDate, holidayDTO.getStartDate().getYear());
-            Long sumBusinessDayNextYear = getSumBusinessDay(LocalDate.of(holidayDTO.getFinishDate().getYear(), 01, 01), holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
+            Long sumBusinessDayNextYear = getSumBusinessDay(LocalDate.of(holidayDTO.getFinishDate().getYear(), 1, 1), holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
             checkingThisYearNumberOfHoliday(sumBusinessDayThisYear, holidayDTO);
             checkingNextYearNumberOfHoliday(sumBusinessDayNextYear, holidayDTO);
             return sumBusinessDayThisYear;
-        } else throw new RegisterException("Invalid date interval!");
+        } else if ((holidayDTO.getStartDate().getYear() == (LocalDate.now().getYear() + 1))
+                && (holidayDTO.getFinishDate().getYear() == (LocalDate.now().getYear() + 1))
+                && (holidayDTO.getFinishDate().getMonth().getValue() == 3)) {
+            {
+                Long sumBusinessDayNextYear = getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
+                checkingNextYearNumberOfHoliday(sumBusinessDayNextYear, holidayDTO);
+            }
+        }
+        throw new RegisterException("Invalid date interval!");
     }
 
     private void checkingThisYearNumberOfHoliday(Long sumBusinessDayThisYear, HolidayDTO holidayDTO) {
         Employee employee = employeeService.findById(holidayDTO.getEmployeeId());
         if ((employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday() - sumBusinessDayThisYear) < 0)
-            throw new RegisterException("The number of holidays available is less than the requested leave! You have only " + (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()) + " days in "+holidayDTO.getStartDate().getYear()+"!" );
+            throw new RegisterException("The number of holidays available is less than the requested leave! You have only " + (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()) + " days in " + holidayDTO.getStartDate().getYear() + "!");
     }
 
     private void checkingNextYearNumberOfHoliday(Long sumBusinessDayNextYear, HolidayDTO holidayDTO) {
@@ -62,7 +72,7 @@ public class SearchBusinessDay {
             employee.setSumHolidayNextYear(employee.getSumHolidayNextYear() + sumBusinessDayNextYear);
             employeeService.saveEmployee(employee);
         } else
-            throw new RegisterException("The number of holidays available is less than the requested leave! You have only " + (employee.getNextYearLeave() - employee.getSumHolidayNextYear()) + " days in "+holidayDTO.getFinishDate().getYear()+"!" );
+            throw new RegisterException("The number of holidays available is less than the requested leave! You have only " + (employee.getNextYearLeave() - employee.getSumHolidayNextYear()) + " days in " + holidayDTO.getFinishDate().getYear() + "!");
     }
 
     private void checkingDateInterval(HolidayDTO holidayDTO) {
@@ -71,7 +81,7 @@ public class SearchBusinessDay {
 
         if (holidayList.size() != 0) {
             Optional<Holiday> holidayOptional = holidayList.stream()
-                    .filter(date -> (date.getStartDate().isEqual(holidayDTO.getStartDate()) && date.getFinishDate().isEqual(holidayDTO.getFinishDate()) && date.getEmployee().getId() == holidayDTO.getEmployeeId()))
+                    .filter(date -> (date.getStartDate().isEqual(holidayDTO.getStartDate()) && date.getFinishDate().isEqual(holidayDTO.getFinishDate()) && date.getEmployee().getId().longValue() == holidayDTO.getEmployeeId().longValue()))
                     .findAny();
             if (holidayOptional.isPresent())
                 throw new RegisterException("This date interval from " + holidayDTO.getStartDate() + " to " + holidayDTO.getFinishDate() + " already exists for the worker!");
@@ -81,12 +91,12 @@ public class SearchBusinessDay {
                             || date.getFinishDate().isEqual(holidayDTO.getFinishDate())
                             || date.getStartDate().isEqual(holidayDTO.getFinishDate())
                             || date.getFinishDate().isEqual(holidayDTO.getStartDate()))
-                            && date.getEmployee().getId() == holidayDTO.getEmployeeId()))
+                            && date.getEmployee().getId().longValue() == holidayDTO.getEmployeeId().longValue()))
                     .findAny();
             if (optionalHoliday.isPresent())
                 throw new RegisterException("The start date or the finish date already exists for the worker!");
 
-            holidayList.stream().forEach(date -> checkingDateOverlap(date, holidayDTO));
+            holidayList.forEach(date -> checkingDateOverlap(date, holidayDTO));
         }
     }
 
@@ -95,14 +105,14 @@ public class SearchBusinessDay {
         LocalDate finishDate = date.getFinishDate();
         if (((holidayDTO.getStartDate().isAfter(startDate) && holidayDTO.getStartDate().isBefore(finishDate))
                 || (holidayDTO.getFinishDate().isAfter(startDate) && holidayDTO.getFinishDate().isBefore(finishDate)))
-                && date.getEmployee().getId() == holidayDTO.getEmployeeId())
+                && date.getEmployee().getId().longValue() == holidayDTO.getEmployeeId().longValue())
             throw new RegisterException("The interval shouldn't be overlap with an existing interval!");
     }
 
     public Long getSumBusinessDay(LocalDate startDate, LocalDate finishDate, Integer year) {
 
         HolidayDay holidayDay = holidayDayRepository.findByYear(String.valueOf(year));
-        if (holidayDay == null) throw new RegisterException("You don't have holiday day database for "+year+"!");
+        if (holidayDay == null) throw new RegisterException("You don't have holiday day database for " + year + "!");
 
         List<LocalDate> localDateList = holidayDay.getLocalDate();
 

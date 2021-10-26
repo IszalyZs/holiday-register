@@ -56,16 +56,16 @@ public class EmployeeService {
 
     public Employee save(EmployeeDTO employeeDTO) {
         checkingBeginningDate(employeeDTO.getBeginningOfEmployment(), employeeDTO.getDateOfEntry());
-        return employeeRepository.save(setBasicLeaveToEmployee(employeeDTO));
+        return employeeRepository.save(setBasicLeave(employeeDTO));
     }
 
 
     public Employee update(EmployeeDTO employeeDTO) {
         checkingBeginningDate(employeeDTO.getBeginningOfEmployment(), employeeDTO.getDateOfEntry());
         List<Children> childrenList = childrenRepository.findAll().stream()
-                .filter(children -> children.getEmployee().getId() == employeeDTO.getId())
+                .filter(children -> children.getEmployee().getId().longValue() == employeeDTO.getId().longValue())
                 .collect(Collectors.toList());
-        Employee employee = setBasicLeaveToEmployee(employeeDTO);
+        Employee employee = setBasicLeave(employeeDTO);
         employee.setChildrenList(childrenList);
         employee.setSumHoliday(findById(employeeDTO.getId()).getSumHoliday());
         employee.setSumHolidayNextYear(findById(employeeDTO.getId()).getSumHolidayNextYear());
@@ -80,7 +80,7 @@ public class EmployeeService {
     }
 
 
-    private Employee setBasicLeaveToEmployee(EmployeeDTO employeeDTO) {
+    private Employee setBasicLeave(EmployeeDTO employeeDTO) {
         Employee employee = employeeDTOToEmployee.getEmployee(employeeDTO);
         employee.setBasicLeave();
         employee.setNextYearLeave(employee.getBasicLeave()+employee.getExtraLeave());
