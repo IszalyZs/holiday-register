@@ -132,11 +132,9 @@ public class HolidayService {
 
     public Long findAllBusinessDayByDateInterval(HolidayDTO holidayDTO) {
         checkingBeginningOfEmploymentDate(holidayDTO);
-        LocalDate startDate;
+
+        LocalDate startDate = getStartDate(holidayDTO);
         Long sumBusinessDay = 0L;
-        if (getEmployeeByHolidayDTO(holidayDTO).getBeginningOfEmployment().isAfter(holidayDTO.getStartDate()))
-            startDate = getEmployeeByHolidayDTO(holidayDTO).getBeginningOfEmployment();
-        else startDate = holidayDTO.getStartDate();
 
         AtomicReference<Long> sumHoliday = new AtomicReference<>(0L);
         if (holidayDTO.getStartDate().getYear() == holidayDTO.getFinishDate().getYear()) {
@@ -161,6 +159,14 @@ public class HolidayService {
             holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
         }
         return sumBusinessDay - sumHoliday.get();
+    }
+
+    private LocalDate getStartDate(HolidayDTO holidayDTO) {
+        LocalDate startDate;
+        if (getEmployeeByHolidayDTO(holidayDTO).getBeginningOfEmployment().isAfter(holidayDTO.getStartDate()))
+            startDate = getEmployeeByHolidayDTO(holidayDTO).getBeginningOfEmployment();
+        else startDate = holidayDTO.getStartDate();
+        return startDate;
     }
 
     private void checkingBeginningOfEmploymentDate(HolidayDTO holidayDTO) {
@@ -188,4 +194,13 @@ public class HolidayService {
     }
 
 
+    public Long getAllBusinessDayByYearAndMonth(HolidayDTO holidayDTO) {
+        checkingBeginningOfEmploymentDate(holidayDTO);
+        LocalDate startDate = getStartDate(holidayDTO);
+        AtomicReference<Long> sumHoliday = new AtomicReference<>(0L);
+        Long sumBusinessDay = searchBusinessDay.getSumBusinessDay(startDate, holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
+        List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
+        holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
+        return sumBusinessDay - sumHoliday.get();
+    }
 }

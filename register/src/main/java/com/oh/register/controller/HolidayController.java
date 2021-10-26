@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
 @RestController
@@ -49,7 +50,7 @@ public class HolidayController {
         return ResponseEntity.ok("The holiday was deleted from " + holidayDTO.getStartDate().toString() + " to " + holidayDTO.getFinishDate().toString() + "!");
     }
 
-    @GetMapping("/businessday/employee/{id}/get-dateinterval")
+    @GetMapping("/businessdays/employee/{id}/dateinterval")
     @Operation(summary = "get business days by date interval", description = "get business days by date interval")
     public ResponseEntity<String> getAllBusinessDayByDateInterval(@RequestParam("start") String startDate, @RequestParam("end") String endDate, @PathVariable("id") Long id) {
         if (id == null) throw new RegisterException("The given id mustn't be null!");
@@ -58,7 +59,7 @@ public class HolidayController {
         try {
             start = LocalDate.parse(startDate, formatter);
             end = LocalDate.parse(endDate, formatter);
-        } catch (Exception ex) {
+        } catch (Exception exception) {
             throw new RegisterException("Invalid date format!");
         }
         HolidayDTO holidayDTO = new HolidayDTO();
@@ -67,6 +68,28 @@ public class HolidayController {
         holidayDTO.setEmployeeId(id);
         Long allBusinessDayByDateInterval = holidayService.findAllBusinessDayByDateInterval(holidayDTO);
         String response = String.format("The employee with id:%d worked %d days from %s to %s!", id, allBusinessDayByDateInterval, holidayDTO.getStartDate().toString(), holidayDTO.getFinishDate().toString());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/businessdays/employee/{id}/year-month")
+    @Operation(summary = "get business days by year and month", description = "get business days by year and month")
+    public ResponseEntity<String> getAllBusinessDayByYearAndMonth(@RequestParam("year") String year, @RequestParam("month") String month, @PathVariable("id") Long id) {
+        if (id == null) throw new RegisterException("The given id mustn't be null!");
+        HolidayDTO holidayDTO;
+        try {
+            LocalDate start = LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), 1);
+            YearMonth yearAndMonth = YearMonth.of(Integer.parseInt(year), Integer.parseInt(month));
+            int daysInMonth = yearAndMonth.lengthOfMonth();
+            LocalDate end = LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), daysInMonth);
+            holidayDTO = new HolidayDTO();
+            holidayDTO.setStartDate(start);
+            holidayDTO.setFinishDate(end);
+            holidayDTO.setEmployeeId(id);
+        } catch (Exception exception) {
+            throw new RegisterException("Invalid arguments!");
+        }
+        Long allBusinessDayByYearAndMonth = holidayService.getAllBusinessDayByYearAndMonth(holidayDTO);
+        String response = String.format("The employee with id:%d worked %d days in a given month %s of a given year %s!", id, allBusinessDayByYearAndMonth, month, year);
         return ResponseEntity.ok(response);
     }
 
