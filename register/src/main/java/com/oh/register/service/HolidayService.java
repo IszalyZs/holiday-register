@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -193,6 +195,25 @@ public class HolidayService {
                 .count();
     }
 
+    private List<LocalDate> collectHolidayToList(Holiday holiday, HolidayDTO holidayDTO) {
+        LocalDate startDate = holidayDTO.getStartDate();
+        LocalDate endDate = LocalDate.of(holidayDTO.getFinishDate().getYear(), holidayDTO.getFinishDate().getMonth().getValue(), holidayDTO.getFinishDate().getDayOfMonth());
+        endDate = endDate.plusDays(1);
+        List<LocalDate> collect = startDate.datesUntil(endDate)
+                .collect(Collectors.toList());
+
+        Predicate<LocalDate> isSegment = date -> collect.contains(date);
+
+        Predicate<LocalDate> isBusinessDay = date -> searchBusinessDay.isBusinessDay(date);
+
+        long daysBetween = ChronoUnit.DAYS.between(holiday.getStartDate(), holiday.getFinishDate());
+
+        return Stream.iterate(holiday.getStartDate(), date -> date.plusDays(1))
+                .limit(daysBetween + 1)
+                .filter(isSegment.and(isBusinessDay))
+                .collect(Collectors.toList());
+    }
+
 
     public Long getAllBusinessDayByYearAndMonth(HolidayDTO holidayDTO) {
         checkingBeginningOfEmploymentDate(holidayDTO);
@@ -204,13 +225,25 @@ public class HolidayService {
         return sumBusinessDay - sumHoliday.get();
     }
 
-    public Long getHolidayByDateInterval(HolidayDTO holidayDTO) {
+    public List<LocalDate> getHolidayByDateInterval(HolidayDTO holidayDTO) {
         checkingBeginningOfEmploymentDate(holidayDTO);
 
-        AtomicReference<Long> sumHoliday = new AtomicReference<>(0L);//****************************************************************************
+        List<LocalDate> localDates = new ArrayList<>();
+        List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
+
+        holidays.forEach(holiday -> localDates.addAll(collectHolidayToList(holiday, holidayDTO)));
+        Collections.sort(localDates);
+        return localDates;
+    }
+
+    public Long getNumberOfHolidayByDateInterval(HolidayDTO holidayDTO) {
+        checkingBeginningOfEmploymentDate(holidayDTO);
+
+        AtomicReference<Long> sumHoliday = new AtomicReference<>(0L);
         List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
 
         holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
         return sumHoliday.get();
+
     }
 }
