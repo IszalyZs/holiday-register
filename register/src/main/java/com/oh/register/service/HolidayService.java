@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service
@@ -132,35 +131,17 @@ public class HolidayService {
             throw new RegisterException("The start date must be earlier than the finish date!");
     }
 
-    public Long findAllBusinessDayByDateInterval(HolidayDTO holidayDTO) {
+    public Long getAllBusinessDay(HolidayDTO holidayDTO) {
         checkingBeginningOfEmploymentDate(holidayDTO);
 
         LocalDate startDate = getStartDate(holidayDTO);
-        Long sumBusinessDay = 0L;
 
         AtomicReference<Long> sumHoliday = new AtomicReference<>(0L);
-        if (holidayDTO.getStartDate().getYear() == holidayDTO.getFinishDate().getYear()) {
-            sumBusinessDay = searchBusinessDay.getSumBusinessDay(startDate, holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
-            List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
-            holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
-        } else {
-            int startYear = holidayDTO.getStartDate().getYear();
-            int finishYear = holidayDTO.getFinishDate().getYear();
-            List<Integer> collect = IntStream.rangeClosed(startYear, finishYear).boxed().collect(Collectors.toList());
-            LocalDate start = startDate;
-            for (int i = 0; i < collect.size(); i++) {
-                LocalDate finish = LocalDate.of(collect.get(i), 12, 31);
-                if (i != 0)
-                    start = LocalDate.of(collect.get(i), 1, 1);
-                if (i == collect.size() - 1)
-                    finish = holidayDTO.getFinishDate();
-                sumBusinessDay += searchBusinessDay.getSumBusinessDay(start, finish, collect.get(i));
-            }
-            List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
-
-            holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
-        }
+        Long sumBusinessDay = searchBusinessDay.getSumBusinessDay(startDate, holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
+        List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
+        holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
         return sumBusinessDay - sumHoliday.get();
+
     }
 
     private LocalDate getStartDate(HolidayDTO holidayDTO) {
@@ -212,17 +193,6 @@ public class HolidayService {
                 .limit(daysBetween + 1)
                 .filter(isSegment.and(isBusinessDay))
                 .collect(Collectors.toList());
-    }
-
-
-    public Long getAllBusinessDayByYearAndMonth(HolidayDTO holidayDTO) {
-        checkingBeginningOfEmploymentDate(holidayDTO);
-        LocalDate startDate = getStartDate(holidayDTO);
-        AtomicReference<Long> sumHoliday = new AtomicReference<>(0L);
-        Long sumBusinessDay = searchBusinessDay.getSumBusinessDay(startDate, holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
-        List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
-        holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
-        return sumBusinessDay - sumHoliday.get();
     }
 
     public List<LocalDate> getHolidayByDateInterval(HolidayDTO holidayDTO) {

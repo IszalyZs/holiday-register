@@ -67,8 +67,8 @@ public class HolidayController {
         holidayDTO.setStartDate(start);
         holidayDTO.setFinishDate(end);
         holidayDTO.setEmployeeId(id);
-        Long allBusinessDayByDateInterval = holidayService.findAllBusinessDayByDateInterval(holidayDTO);
-        String response = String.format("The employee with id:%d worked %d days from %s to %s!", id, allBusinessDayByDateInterval, holidayDTO.getStartDate().toString(), holidayDTO.getFinishDate().toString());
+        Long getAllBusinessDay = holidayService.getAllBusinessDay(holidayDTO);
+        String response = String.format("The employee with id:%d worked %d days from %s to %s!", id, getAllBusinessDay, holidayDTO.getStartDate().toString(), holidayDTO.getFinishDate().toString());
         return ResponseEntity.ok(response);
     }
 
@@ -89,8 +89,8 @@ public class HolidayController {
         } catch (Exception exception) {
             throw new RegisterException("Invalid arguments!");
         }
-        Long allBusinessDayByYearAndMonth = holidayService.getAllBusinessDayByYearAndMonth(holidayDTO);
-        String response = String.format("The employee with id:%d worked %d days in a given month %s of a given year %s!", id, allBusinessDayByYearAndMonth, month, year);
+        Long getAllBusinessDay = holidayService.getAllBusinessDay(holidayDTO);
+        String response = String.format("The employee with id:%d worked %d days in a given month %s of a given year %s!", id, getAllBusinessDay, month, year);
         return ResponseEntity.ok(response);
     }
 
