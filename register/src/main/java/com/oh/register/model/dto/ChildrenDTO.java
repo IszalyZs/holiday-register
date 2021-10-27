@@ -1,10 +1,7 @@
 package com.oh.register.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -17,6 +14,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class ChildrenDTO {
     private Long id;
 
@@ -37,4 +35,16 @@ public class ChildrenDTO {
 
     @JsonIgnore
     private Long employeeId;
+
+    @Override
+    public String toString() {
+        return "ChildrenDTO{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthDay=" + birthDay +
+                ", employeeDTO=" + employeeDTO +
+                ", employeeId=" + employeeId +
+                '}';
+    }
 }
