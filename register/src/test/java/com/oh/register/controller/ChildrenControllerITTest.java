@@ -136,7 +136,7 @@ class ChildrenControllerITTest {
     }
 
     @Test
-    void save_inputChildrenDTOWithInvalidBirthDayDate_shouldReturnRegisterException() {
+    void save_inputChildrenDTOWithInvalidBirthDayDate_shouldReturnBadRequest() {
         long id = 1;
         ChildrenDTO children = new ChildrenDTO();
         children.setId(4L);

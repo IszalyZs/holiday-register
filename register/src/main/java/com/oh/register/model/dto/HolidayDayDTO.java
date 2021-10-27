@@ -13,6 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class HolidayDayDTO {
     private Long id;
 
@@ -22,4 +23,13 @@ public class HolidayDayDTO {
     private String year;
 
     private List<LocalDate> localDate = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "HolidayDayDTO{" +
+                "id=" + id +
+                ", year='" + year + '\'' +
+                ", localDate=" + localDate +
+                '}';
+    }
 }
