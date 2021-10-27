@@ -137,4 +137,24 @@ public class SearchBusinessDay {
                 .findAny();
         return localDateOptional.isPresent();
     }
+
+    public boolean isHolidayDay(LocalDate localDate) {
+        HolidayDay holidayDay = holidayDayRepository.findByYear(String.valueOf(localDate.getYear()));
+        if (holidayDay == null)
+            throw new RegisterException("You don't have holiday day database for " + localDate.getYear() + "!");
+
+        List<LocalDate> localDateList = holidayDay.getLocalDate();
+
+        Predicate<LocalDate> isHoliday = date -> localDateList != null && localDateList.contains(date);
+
+        Predicate<LocalDate> isWeekend = date -> (date.getDayOfWeek() != DayOfWeek.SATURDAY
+                && date.getDayOfWeek() != DayOfWeek.SUNDAY);
+
+        Optional<LocalDate> localDateOptional = Stream.iterate(localDate, date -> date.plusDays(1))
+                .limit(1)
+                .filter(isHoliday.and(isWeekend))
+                .findAny();
+
+        return localDateOptional.isPresent();
+    }
 }

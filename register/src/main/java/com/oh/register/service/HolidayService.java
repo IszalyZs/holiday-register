@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -134,7 +131,7 @@ public class HolidayService {
     public Long getAllBusinessDay(HolidayDTO holidayDTO) {
         checkingBeginningOfEmploymentDate(holidayDTO);
 
-        LocalDate startDate = getStartDate(holidayDTO);
+        LocalDate startDate = getValidStartDate(holidayDTO);
 
         AtomicReference<Long> sumHoliday = new AtomicReference<>(0L);
         Long sumBusinessDay = searchBusinessDay.getSumBusinessDay(startDate, holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
@@ -144,7 +141,7 @@ public class HolidayService {
 
     }
 
-    private LocalDate getStartDate(HolidayDTO holidayDTO) {
+    private LocalDate getValidStartDate(HolidayDTO holidayDTO) {
         LocalDate startDate;
         if (getEmployeeByHolidayDTO(holidayDTO).getBeginningOfEmployment().isAfter(holidayDTO.getStartDate()))
             startDate = getEmployeeByHolidayDTO(holidayDTO).getBeginningOfEmployment();
@@ -158,7 +155,7 @@ public class HolidayService {
     }
 
     private Long searchHoliday(Holiday holiday, HolidayDTO holidayDTO) {
-        LocalDate startDate = holidayDTO.getStartDate();
+        LocalDate startDate = getValidStartDate(holidayDTO);
         LocalDate endDate = LocalDate.of(holidayDTO.getFinishDate().getYear(), holidayDTO.getFinishDate().getMonth().getValue(), holidayDTO.getFinishDate().getDayOfMonth());
         endDate = endDate.plusDays(1);
         List<LocalDate> collect = startDate.datesUntil(endDate)
@@ -170,14 +167,20 @@ public class HolidayService {
 
         long daysBetween = ChronoUnit.DAYS.between(holiday.getStartDate(), holiday.getFinishDate());
 
-        return Stream.iterate(holiday.getStartDate(), date -> date.plusDays(1))
+        long count = Stream.iterate(holiday.getStartDate(), date -> date.plusDays(1))
                 .limit(daysBetween + 1)
                 .filter(isSegment.and(isBusinessDay))
                 .count();
+
+        for (LocalDate item : collect) {
+            if (searchBusinessDay.isHolidayDay(item)) count++;
+        }
+
+        return count;
     }
 
-    private List<LocalDate> collectHolidayToList(Holiday holiday, HolidayDTO holidayDTO) {
-        LocalDate startDate = holidayDTO.getStartDate();
+    private Set<LocalDate> collectHolidayToList(Holiday holiday, HolidayDTO holidayDTO) {
+        LocalDate startDate = getValidStartDate(holidayDTO);
         LocalDate endDate = LocalDate.of(holidayDTO.getFinishDate().getYear(), holidayDTO.getFinishDate().getMonth().getValue(), holidayDTO.getFinishDate().getDayOfMonth());
         endDate = endDate.plusDays(1);
         List<LocalDate> collect = startDate.datesUntil(endDate)
@@ -189,20 +192,26 @@ public class HolidayService {
 
         long daysBetween = ChronoUnit.DAYS.between(holiday.getStartDate(), holiday.getFinishDate());
 
-        return Stream.iterate(holiday.getStartDate(), date -> date.plusDays(1))
+        Set<LocalDate> holidaysList = Stream.iterate(holiday.getStartDate(), date -> date.plusDays(1))
                 .limit(daysBetween + 1)
                 .filter(isSegment.and(isBusinessDay))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
+
+        for (LocalDate item : collect) {
+            if (searchBusinessDay.isHolidayDay(item)) holidaysList.add(item);
+        }
+        return holidaysList;
     }
 
-    public List<LocalDate> getHolidayByDateInterval(HolidayDTO holidayDTO) {
+    public Set<LocalDate> getHolidayByDateInterval(HolidayDTO holidayDTO) {
         checkingBeginningOfEmploymentDate(holidayDTO);
 
-        List<LocalDate> localDates = new ArrayList<>();
+        Set<LocalDate> localDates = new TreeSet<>();
         List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
 
         holidays.forEach(holiday -> localDates.addAll(collectHolidayToList(holiday, holidayDTO)));
-        Collections.sort(localDates);
+
+
         return localDates;
     }
 

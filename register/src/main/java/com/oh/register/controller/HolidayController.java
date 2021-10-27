@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -96,7 +97,7 @@ public class HolidayController {
 
     @GetMapping("/holiday/employee/{id}/dateinterval")
     @Operation(summary = "get holiday list by date interval", description = "get holiday list by date interval")
-    public ResponseEntity<List<LocalDate>> getHolidayByDateInterval(@RequestParam("start") String startDate, @RequestParam("end") String endDate, @PathVariable("id") Long id) {
+    public ResponseEntity<Set<LocalDate>> getHolidayByDateInterval(@RequestParam("start") String startDate, @RequestParam("end") String endDate, @PathVariable("id") Long id) {
         if (id == null) throw new RegisterException("The given id mustn't be null!");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate start, end;
@@ -110,7 +111,7 @@ public class HolidayController {
         holidayDTO.setStartDate(start);
         holidayDTO.setFinishDate(end);
         holidayDTO.setEmployeeId(id);
-        List<LocalDate> holidayByDateInterval = holidayService.getHolidayByDateInterval(holidayDTO);
+        Set<LocalDate> holidayByDateInterval = holidayService.getHolidayByDateInterval(holidayDTO);
         return ResponseEntity.ok(holidayByDateInterval);
     }
 
