@@ -152,77 +152,79 @@ public class HolidayService {
     private void checkingBeginningOfEmploymentDate(HolidayDTO holidayDTO) {
         if (getEmployeeByHolidayDTO(holidayDTO).getBeginningOfEmployment() == null)
             throw new RegisterException("The beginning of employment date is null!");
+        Employee employee = getEmployeeByHolidayDTO(holidayDTO);
+        LocalDate startDate = holidayDTO.getStartDate();
+        LocalDate endDate = holidayDTO.getFinishDate();
+        endDate = endDate.plusDays(1);
+        Predicate<LocalDate> isExistsBeginningOfEmploymentDate = date -> date.isBefore(employee.getBeginningOfEmployment());
+
+        List<LocalDate> collect = startDate.datesUntil(endDate)
+                .collect(Collectors.toList());
+
+        if (collect.stream().allMatch(isExistsBeginningOfEmploymentDate))
+            throw new RegisterException(String.format("The worker with id: %d has no beginning of employment date during that interval!",employee.getId()));
     }
+
 
     private Long searchHoliday(Holiday holiday, HolidayDTO holidayDTO) {
         LocalDate startDate = getValidStartDate(holidayDTO);
-        LocalDate endDate = LocalDate.of(holidayDTO.getFinishDate().getYear(), holidayDTO.getFinishDate().getMonth().getValue(), holidayDTO.getFinishDate().getDayOfMonth());
+        LocalDate endDate = holidayDTO.getFinishDate();
         endDate = endDate.plusDays(1);
         List<LocalDate> collect = startDate.datesUntil(endDate)
                 .collect(Collectors.toList());
 
-        Predicate<LocalDate> isSegment = date -> collect.contains(date);
+        Predicate<LocalDate> isSegment = collect::contains;
 
-        Predicate<LocalDate> isBusinessDay = date -> searchBusinessDay.isBusinessDay(date);
+        Predicate<LocalDate> isBusinessDay = searchBusinessDay::isBusinessDay;
 
         long daysBetween = ChronoUnit.DAYS.between(holiday.getStartDate(), holiday.getFinishDate());
 
-        long count = Stream.iterate(holiday.getStartDate(), date -> date.plusDays(1))
+        return Stream.iterate(holiday.getStartDate(), date -> date.plusDays(1))
                 .limit(daysBetween + 1)
                 .filter(isSegment.and(isBusinessDay))
                 .count();
-
-        for (LocalDate item : collect) {
-            if (searchBusinessDay.isHolidayDay(item)) count++;
-        }
-
-        return count;
     }
 
-    private Set<LocalDate> collectHolidayToList(Holiday holiday, HolidayDTO holidayDTO) {
+    private Set<LocalDate> collectHolidaysToSet(Holiday holiday, HolidayDTO holidayDTO) {
         LocalDate startDate = getValidStartDate(holidayDTO);
-        LocalDate endDate = LocalDate.of(holidayDTO.getFinishDate().getYear(), holidayDTO.getFinishDate().getMonth().getValue(), holidayDTO.getFinishDate().getDayOfMonth());
+        LocalDate endDate = holidayDTO.getFinishDate();
         endDate = endDate.plusDays(1);
         List<LocalDate> collect = startDate.datesUntil(endDate)
                 .collect(Collectors.toList());
 
-        Predicate<LocalDate> isSegment = date -> collect.contains(date);
+        Predicate<LocalDate> isSegment = collect::contains;
 
-        Predicate<LocalDate> isBusinessDay = date -> searchBusinessDay.isBusinessDay(date);
+        Predicate<LocalDate> isBusinessDay = searchBusinessDay::isBusinessDay;
 
         long daysBetween = ChronoUnit.DAYS.between(holiday.getStartDate(), holiday.getFinishDate());
 
-        Set<LocalDate> holidaysList = Stream.iterate(holiday.getStartDate(), date -> date.plusDays(1))
+        Set<LocalDate> holidays = Stream.iterate(holiday.getStartDate(), date -> date.plusDays(1))
                 .limit(daysBetween + 1)
                 .filter(isSegment.and(isBusinessDay))
                 .collect(Collectors.toSet());
 
         for (LocalDate item : collect) {
-            if (searchBusinessDay.isHolidayDay(item)) holidaysList.add(item);
+            if (searchBusinessDay.isHolidayDay(item)) holidays.add(item);
         }
-        return holidaysList;
+        return holidays;
     }
 
     public Set<LocalDate> getHolidayByDateInterval(HolidayDTO holidayDTO) {
+        return getHolidaySet(holidayDTO);
+    }
+
+    public Long getNumberOfHolidayByDateInterval(HolidayDTO holidayDTO) {
+        return (long) getHolidaySet(holidayDTO).size();
+    }
+
+    private Set<LocalDate> getHolidaySet(HolidayDTO holidayDTO) {
         checkingBeginningOfEmploymentDate(holidayDTO);
 
         Set<LocalDate> localDates = new TreeSet<>();
         List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
 
-        holidays.forEach(holiday -> localDates.addAll(collectHolidayToList(holiday, holidayDTO)));
-
+        holidays.forEach(holiday -> localDates.addAll(collectHolidaysToSet(holiday, holidayDTO)));
 
         return localDates;
-    }
-
-    public Long getNumberOfHolidayByDateInterval(HolidayDTO holidayDTO) {
-        checkingBeginningOfEmploymentDate(holidayDTO);
-
-        AtomicReference<Long> sumHoliday = new AtomicReference<>(0L);
-        List<Holiday> holidays = holidayRepository.findByEmployee_Id(holidayDTO.getEmployeeId());
-
-        holidays.forEach(holiday -> sumHoliday.updateAndGet(v -> v + searchHoliday(holiday, holidayDTO)));
-        return sumHoliday.get();
-
     }
 }
