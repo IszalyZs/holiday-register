@@ -83,7 +83,8 @@ class HolidayDayControllerITTest {
         ResponseEntity<String> response = testRestTemplate.getForEntity(BASE_URL + "/{id}/get", String.class, badId);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         String expected = "The holidayDay entity doesn't exist with id: 3!";
-        assertEquals(expected, response.getBody());
+        String actual = response.getBody();
+        assertEquals(expected, actual);
     }
 
 
@@ -98,19 +99,21 @@ class HolidayDayControllerITTest {
         ResponseEntity<String> responseAfterDelete = testRestTemplate.getForEntity(BASE_URL + "/{id}/get", String.class, id);
         assertEquals(HttpStatus.BAD_REQUEST, responseAfterDelete.getStatusCode());
         String expected = "The holidayDay entity doesn't exist with id: 1!";
-        assertEquals(expected, responseAfterDelete.getBody());
+        String actual = responseAfterDelete.getBody();
+        assertEquals(expected, actual);
     }
 
     @Test
     void save_inputHolidayDayDTO_shouldReturnRightHolidayDayDTO() {
-        HolidayDayDTO holidayDayDTO = new HolidayDayDTO();
-        holidayDayDTO.setId(3L);
-        holidayDayDTO.setYear("2019");
-        holidayDayDTO.setLocalDate(Arrays.asList(LocalDate.of(2019, 1, 1), LocalDate.of(2019, 3, 15), LocalDate.of(2019, 4, 2)));
+        HolidayDayDTO expected = new HolidayDayDTO();
+        expected.setId(3L);
+        expected.setYear("2019");
+        expected.setLocalDate(Arrays.asList(LocalDate.of(2019, 1, 1), LocalDate.of(2019, 3, 15), LocalDate.of(2019, 4, 2)));
 
-        ResponseEntity<HolidayDayDTO> response = testRestTemplate.postForEntity(BASE_URL + "/add", new HttpEntity<>(holidayDayDTO), HolidayDayDTO.class);
+        ResponseEntity<HolidayDayDTO> response = testRestTemplate.postForEntity(BASE_URL + "/add", new HttpEntity<>(expected), HolidayDayDTO.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(holidayDayDTO, response.getBody());
+        HolidayDayDTO actual = response.getBody();
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -123,7 +126,8 @@ class HolidayDayControllerITTest {
         ResponseEntity<String> response = testRestTemplate.postForEntity(BASE_URL + "/add", new HttpEntity<>(holidayDayDTO), String.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         String expected = "Duplicate entry at holiday days year:2021 is already exists!";
-        assertEquals(expected, response.getBody());
+        String actual = response.getBody();
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -136,7 +140,8 @@ class HolidayDayControllerITTest {
         ResponseEntity<String> response = testRestTemplate.postForEntity(BASE_URL + "/add", new HttpEntity<>(holidayDayDTO), String.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         String expected = "The list includes different years! You have to use 2020!";
-        assertEquals(expected, response.getBody());
+        String actual = response.getBody();
+        assertEquals(expected, actual);
     }
 
 
@@ -149,12 +154,16 @@ class HolidayDayControllerITTest {
         long id = 1;
         ResponseEntity<HolidayDayDTO> responseBeforeUpdate = testRestTemplate.getForEntity(BASE_URL + "/{id}/get", HolidayDayDTO.class, id);
         assertEquals(HttpStatus.OK, responseBeforeUpdate.getStatusCode());
-        assertEquals(1, Objects.requireNonNull(responseBeforeUpdate.getBody()).getLocalDate().get(0).getDayOfMonth());
+        int expected = 1;
+        int actual = Objects.requireNonNull(responseBeforeUpdate.getBody()).getLocalDate().get(0).getDayOfMonth();
+        assertEquals(expected, actual);
 
         testRestTemplate.put(BASE_URL + "/{id}/update", new HttpEntity<>(holidayDayDTO), id);
         ResponseEntity<HolidayDayDTO> responseAfterUpdate = testRestTemplate.getForEntity(BASE_URL + "/{id}/get", HolidayDayDTO.class, id);
         assertEquals(HttpStatus.OK, responseAfterUpdate.getStatusCode());
-        assertEquals(11, Objects.requireNonNull(responseAfterUpdate.getBody()).getLocalDate().get(0).getDayOfMonth());
+        expected = 11;
+        actual = Objects.requireNonNull(responseAfterUpdate.getBody()).getLocalDate().get(0).getDayOfMonth();
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -167,6 +176,8 @@ class HolidayDayControllerITTest {
         testRestTemplate.put(BASE_URL + "/{id}/update", new HttpEntity<>(holidayDayDTO), id);
         ResponseEntity<HolidayDayDTO> responseAfterUpdate = testRestTemplate.getForEntity(BASE_URL + "/{id}/get", HolidayDayDTO.class, id);
         assertEquals(HttpStatus.OK, responseAfterUpdate.getStatusCode());
-        assertEquals("2021", Objects.requireNonNull(responseAfterUpdate.getBody()).getYear());
+        String expected = "2021";
+        String actual = Objects.requireNonNull(responseAfterUpdate.getBody()).getYear();
+        assertEquals(expected, actual);
     }
 }

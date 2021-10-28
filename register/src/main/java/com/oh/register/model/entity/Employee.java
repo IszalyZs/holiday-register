@@ -71,7 +71,7 @@ public class Employee {
         LocalDate nowDate = LocalDate.now();
         LocalDate employeeBirthDate = this.getBirthDate();
         long age = ChronoUnit.YEARS.between(employeeBirthDate, nowDate);
-        if (age < 16) throw new RegisterException("You are is very young for work!");
+        if (age < 16) throw new RegisterException("Your age is under 16!");
         else if (age >= 16 && age < 25) setBasicLeave(20);
         else if (age >= 25 && age < 28) setBasicLeave(21);
         else if (age >= 28 && age < 31) setBasicLeave(22);

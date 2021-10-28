@@ -38,13 +38,6 @@ public class ChildrenDTO {
 
     @Override
     public String toString() {
-        return "ChildrenDTO{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", birthDay=" + birthDay +
-                ", employeeDTO=" + employeeDTO +
-                ", employeeId=" + employeeId +
-                '}';
+        return String.format("id=%d, firstName=%s, lastName=%s, birthDay=%s ", id, firstName, lastName, birthDay.toString());
     }
 }

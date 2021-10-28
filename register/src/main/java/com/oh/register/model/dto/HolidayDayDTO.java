@@ -26,10 +26,6 @@ public class HolidayDayDTO {
 
     @Override
     public String toString() {
-        return "HolidayDayDTO{" +
-                "id=" + id +
-                ", year='" + year + '\'' +
-                ", localDate=" + localDate +
-                '}';
+        return "id=" + id + ", year=" + year + ", localDate=" + localDate;
     }
 }

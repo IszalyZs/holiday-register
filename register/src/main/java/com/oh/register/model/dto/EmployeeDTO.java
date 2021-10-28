@@ -1,10 +1,7 @@
 package com.oh.register.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,6 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class EmployeeDTO {
     private Long id;
 
@@ -56,4 +54,10 @@ public class EmployeeDTO {
     @JsonIgnore
     private HolidayDTO holidayDTO;
 
+    @Override
+    public String toString() {
+        return String.format("id=%d. firstName=%s, lastName=%s, identityNumber=%s, birthDate=%s, " +
+                "workplace=%s, position=%s, dateOfEntry=%s, beginningOfEmployment=%s"
+                ,id,firstName,lastName,identityNumber,birthDate.toString(),workplace,position,dateOfEntry.toString(),beginningOfEmployment.toString());
+    }
 }

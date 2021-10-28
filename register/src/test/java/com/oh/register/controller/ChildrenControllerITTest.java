@@ -2,6 +2,7 @@ package com.oh.register.controller;
 
 import com.oh.register.model.dto.ChildrenDTO;
 import com.oh.register.model.dto.EmployeeDTO;
+import com.oh.register.model.entity.Children;
 import com.oh.register.model.entity.Employee;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,7 +106,8 @@ class ChildrenControllerITTest {
         ResponseEntity<String> response = testRestTemplate.getForEntity(BASE_URL + "/{id}/get", String.class, badId);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         String expected = "The children entity doesn't exist with id: 4!";
-        assertEquals(expected, response.getBody());
+        String actual = response.getBody();
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -119,20 +121,22 @@ class ChildrenControllerITTest {
         ResponseEntity<String> responseAfterDelete = testRestTemplate.getForEntity(BASE_URL + "/{id}/get", String.class, id);
         assertEquals(HttpStatus.BAD_REQUEST, responseAfterDelete.getStatusCode());
         String expected = "The children entity doesn't exist with id: 3!";
-        assertEquals(expected, responseAfterDelete.getBody());
+        String actual = responseAfterDelete.getBody();
+        assertEquals(expected, actual);
     }
 
     @Test
     void save_inputChildrenDTO_shouldReturnRightChlidrenDTO() {
         long id = 1;
-        ChildrenDTO children = new ChildrenDTO();
-        children.setId(4L);
-        children.setFirstName("Kiss");
-        children.setLastName("Péter");
-        children.setBirthDay(LocalDate.of(2020, 1, 1));
-        ResponseEntity<ChildrenDTO> response = testRestTemplate.postForEntity(BASE_URL + "/employee/{id}/add", new HttpEntity<>(children), ChildrenDTO.class, id);
+        ChildrenDTO expected = new ChildrenDTO();
+        expected.setId(4L);
+        expected.setFirstName("Kiss");
+        expected.setLastName("Péter");
+        expected.setBirthDay(LocalDate.of(2020, 1, 1));
+        ResponseEntity<ChildrenDTO> response = testRestTemplate.postForEntity(BASE_URL + "/employee/{id}/add", new HttpEntity<>(expected), ChildrenDTO.class, id);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(children, response.getBody());
+        ChildrenDTO actual = response.getBody();
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -146,7 +150,8 @@ class ChildrenControllerITTest {
         ResponseEntity<String> response = testRestTemplate.postForEntity(BASE_URL + "/employee/{id}/add", new HttpEntity<>(children), String.class, id);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         String expected = "Object name:childrenDTO, error code:Past, error message:Date of birth must be less than today!\n";
-        assertEquals(expected, response.getBody());
+        String actual = response.getBody();
+        assertEquals(expected, actual);
     }
 
 
@@ -160,12 +165,16 @@ class ChildrenControllerITTest {
         children.setBirthDay(LocalDate.of(2020, 1, 1));
         ResponseEntity<ChildrenDTO> response = testRestTemplate.postForEntity(BASE_URL + "/employee/{id}/add", new HttpEntity<>(children), ChildrenDTO.class, employeeId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Kiss", Objects.requireNonNull(response.getBody()).getFirstName());
+        String expected = "Kiss";
+        String actual = Objects.requireNonNull(response.getBody()).getFirstName();
+        assertEquals(expected, actual);
         children.setFirstName("Kovács");
         long id = 4;
         testRestTemplate.put(BASE_URL + "/{id}/update", new HttpEntity<>(children), id);
         ResponseEntity<ChildrenDTO> updatedChildrenDTO = testRestTemplate.getForEntity(BASE_URL + "/{id}/get", ChildrenDTO.class, id);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Kovács", Objects.requireNonNull(updatedChildrenDTO.getBody()).getFirstName());
+        expected = "Kovács";
+        actual = Objects.requireNonNull(updatedChildrenDTO.getBody()).getFirstName();
+        assertEquals(expected, actual);
     }
 }
