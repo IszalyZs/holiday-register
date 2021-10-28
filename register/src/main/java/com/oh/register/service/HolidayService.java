@@ -59,7 +59,6 @@ public class HolidayService {
         savedEmployee.setSumHoliday(savedEmployee.getSumHoliday() + businessDays);
         employeeRepository.save(savedEmployee);
 
-
         return holidayToHolidayDTO.getHolidayDTO(savedHoliday);
     }
 
@@ -81,7 +80,7 @@ public class HolidayService {
             holidayRepository.deleteById(id);
             addDeletedDaysToEmployee(holidayDTO);
         } catch (Exception ex) {
-            throw new RegisterException("No row with id: " + id + "!");
+            throw new RegisterException("No row with Holiday_id: " + id + "! "+ex.getMessage());
         }
     }
 
@@ -162,7 +161,7 @@ public class HolidayService {
                 .collect(Collectors.toList());
 
         if (collect.stream().allMatch(isExistsBeginningOfEmploymentDate))
-            throw new RegisterException(String.format("The worker with id: %d has no beginning of employment date during that interval!",employee.getId()));
+            throw new RegisterException(String.format("The worker with id: %d has no beginning of employment date during that interval!", employee.getId()));
     }
 
 

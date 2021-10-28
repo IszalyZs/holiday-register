@@ -17,7 +17,6 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Set;
 
 @RestController

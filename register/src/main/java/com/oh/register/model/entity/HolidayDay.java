@@ -25,6 +25,6 @@ public class HolidayDay {
     @Column(unique = true, nullable = false)
     private String year;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<LocalDate> localDate= new ArrayList<>();
 }

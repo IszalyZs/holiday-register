@@ -1,10 +1,7 @@
 package com.oh.register.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -13,6 +10,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class HolidayDTO {
 
     private Long id;
@@ -25,4 +23,9 @@ public class HolidayDTO {
 
     @NotNull(message = "The finish date field can't be empty!")
     private LocalDate finishDate;
+
+    @Override
+    public String toString() {
+        return String.format("id=%d, employeeId=%d, startDate=%s, finishDate=%s", id, employeeId, startDate.toString(), finishDate.toString());
+    }
 }
