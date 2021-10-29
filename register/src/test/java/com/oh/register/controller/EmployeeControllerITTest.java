@@ -268,7 +268,7 @@ class EmployeeControllerITTest {
     }
 
     @Test
-    void update_inputInValidEmployeeDTO_shouldReturnDTOWithoutUpdate() {
+    void update_inputInvalidEmployeeDTO_shouldReturnDTOWithoutUpdate() {
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setBirthDate(LocalDate.of(1995, 1, 1));
         employeeDTO.setBeginningOfEmployment(LocalDate.of(2021, 1, 5));

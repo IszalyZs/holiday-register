@@ -78,13 +78,13 @@ public class HolidayService {
         Long id = foundHoliday.getId();
         try {
             holidayRepository.deleteById(id);
-            addDeletedDaysToEmployee(holidayDTO);
+            addDeletedHolidayToEmployee(holidayDTO);
         } catch (Exception ex) {
             throw new RegisterException("No row with Holiday_id: " + id + "! "+ex.getMessage());
         }
     }
 
-    private void addDeletedDaysToEmployee(HolidayDTO holidayDTO) {
+    private void addDeletedHolidayToEmployee(HolidayDTO holidayDTO) {
         Employee employee = getEmployeeByHolidayDTO(holidayDTO);
         if (holidayDTO.getStartDate().getYear() == holidayDTO.getFinishDate().getYear()) {
             Long sumBusinessDayThisYear = searchBusinessDay.getSumBusinessDay(holidayDTO.getStartDate(), holidayDTO.getFinishDate(), holidayDTO.getStartDate().getYear());
@@ -212,7 +212,7 @@ public class HolidayService {
         return getHolidaySet(holidayDTO);
     }
 
-    public Long getNumberOfHolidayByDateInterval(HolidayDTO holidayDTO) {
+    public Long getAmountOfLeaveByDateInterval(HolidayDTO holidayDTO) {
         return (long) getHolidaySet(holidayDTO).size();
     }
 

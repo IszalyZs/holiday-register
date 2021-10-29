@@ -116,7 +116,7 @@ public class HolidayController {
 
     @GetMapping("/holiday/employee/{id}/numbers")
     @Operation(summary = "get number of holiday by date interval", description = "get number of holiday by date interval")
-    public ResponseEntity<String> getNumberOfHolidayByDateInterval(@RequestParam("start") String startDate, @RequestParam("end") String endDate, @PathVariable("id") Long id) {
+    public ResponseEntity<String> getAmountOfLeaveByDateInterval(@RequestParam("start") String startDate, @RequestParam("end") String endDate, @PathVariable("id") Long id) {
         if (id == null) throw new RegisterException("The given id mustn't be null!");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate start, end;
@@ -130,8 +130,8 @@ public class HolidayController {
         holidayDTO.setStartDate(start);
         holidayDTO.setFinishDate(end);
         holidayDTO.setEmployeeId(id);
-        Long numberOfHolidayByDateInterval = holidayService.getNumberOfHolidayByDateInterval(holidayDTO);
-        String response = String.format("The employee with id:%d number of leave %d days from %s to %s!", id, numberOfHolidayByDateInterval, holidayDTO.getStartDate().toString(), holidayDTO.getFinishDate().toString());
+        Long amountOfLeave = holidayService.getAmountOfLeaveByDateInterval(holidayDTO);
+        String response = String.format("The employee with id:%d number of leave %d days from %s to %s!", id, amountOfLeave, holidayDTO.getStartDate().toString(), holidayDTO.getFinishDate().toString());
         return ResponseEntity.ok(response);
     }
 

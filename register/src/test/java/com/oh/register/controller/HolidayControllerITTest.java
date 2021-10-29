@@ -6,7 +6,6 @@ import com.oh.register.model.dto.EmployeeDTO;
 import com.oh.register.model.dto.HolidayDTO;
 import com.oh.register.model.dto.HolidayDayDTO;
 import com.oh.register.model.entity.Employee;
-import com.oh.register.service.HolidayService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +19,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,9 +38,6 @@ class HolidayControllerITTest {
 
     @Autowired
     private HolidayController holidayController;
-
-    @Autowired
-    private HolidayService holidayService;
 
     private List<ChildrenDTO> childrenDTOS = new ArrayList<>();
 
@@ -154,6 +147,98 @@ class HolidayControllerITTest {
     }
 
     @Test
+    void save_inputHolidayDTOWithBiggerHolidayInterval_shouldReturnBadRequest() {
+        long id = 1;
+        HolidayDTO expected = new HolidayDTO();
+        expected.setId(5L);
+        expected.setStartDate(LocalDate.of(2021, 6, 25));
+        expected.setFinishDate(LocalDate.of(2021, 7, 28));
+
+        ResponseEntity<String> response = testRestTemplate.postForEntity(BASE_URL + "/holiday/employee/{id}/add", new HttpEntity<>(expected), String.class, id);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ResponseEntity<Employee> responseEmployee = testRestTemplate.getForEntity(BASE_URL + "/employee/{id}/get", Employee.class, id);
+        String actual = response.getBody();
+        String expectedResponse = "The number of holidays available is less than the requested leave! You have only " + (responseEmployee.getBody().getBasicLeave() + responseEmployee.getBody().getExtraLeave() - responseEmployee.getBody().getSumHoliday()) + " days!";
+        assertEquals(expectedResponse, actual);
+    }
+
+    @Test
+    void save_inputHolidayDTOWithNextYearDateInterval_shouldReturnBadRequest() {
+        long id = 1;
+        HolidayDTO holidayDTO = new HolidayDTO();
+        holidayDTO.setId(5L);
+        holidayDTO.setStartDate(LocalDate.of(2022, 1, 25));
+        holidayDTO.setFinishDate(LocalDate.of(2022, 1, 28));
+
+        ResponseEntity<String> response = testRestTemplate.postForEntity(BASE_URL + "/holiday/employee/{id}/add", new HttpEntity<>(holidayDTO), String.class, id);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        String actual = response.getBody();
+        String expected = "Invalid date interval! Next year's leave is not allowed";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void save_inputHolidayDTOWithOverLapDateInterval_shouldReturnBadRequest() {
+        long id = 1;
+        HolidayDTO holidayDTO = new HolidayDTO();
+        holidayDTO.setId(5L);
+        holidayDTO.setStartDate(LocalDate.of(2021, 12, 30));
+        holidayDTO.setFinishDate(LocalDate.of(2022, 1, 12));
+
+        ResponseEntity<String> response = testRestTemplate.postForEntity(BASE_URL + "/holiday/employee/{id}/add", new HttpEntity<>(holidayDTO), String.class, id);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        String actual = response.getBody();
+        String expected = "The interval shouldn't be overlap with an existing interval!";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void save_inputHolidayDTOWithDuplicatedDateInterval_shouldReturnBadRequest() {
+        long id = 1;
+        HolidayDTO holidayDTO = new HolidayDTO();
+        holidayDTO.setId(5L);
+        holidayDTO.setStartDate(LocalDate.of(2021, 2, 5));
+        holidayDTO.setFinishDate(LocalDate.of(2021, 2, 15));
+
+        ResponseEntity<String> response = testRestTemplate.postForEntity(BASE_URL + "/holiday/employee/{id}/add", new HttpEntity<>(holidayDTO), String.class, id);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        String actual = response.getBody();
+        String expected = String.format("This date interval from %s to %s already exists for the worker!", holidayDTO.getStartDate(), holidayDTO.getFinishDate());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void save_inputHolidayDTOWithOverlapDateInterval_shouldReturnBadRequest() {
+        long id = 1;
+        HolidayDTO holidayDTO = new HolidayDTO();
+        holidayDTO.setId(5L);
+        holidayDTO.setStartDate(LocalDate.of(2021, 2, 15));
+        holidayDTO.setFinishDate(LocalDate.of(2021, 2, 18));
+
+        ResponseEntity<String> response = testRestTemplate.postForEntity(BASE_URL + "/holiday/employee/{id}/add", new HttpEntity<>(holidayDTO), String.class, id);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        String actual = response.getBody();
+        String expected = "The start date or the finish date already exists for the worker!";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void save_inputHolidayDTOWithBiggerHolidayIntervalNextYear_shouldReturnBadRequest() {
+        long id = 1;
+        HolidayDTO expected = new HolidayDTO();
+        expected.setId(5L);
+        expected.setStartDate(LocalDate.of(2021, 12, 25));
+        expected.setFinishDate(LocalDate.of(2022, 2, 28));
+        holidayController.delete(holidayDTOS.get(2), 1L);
+        ResponseEntity<String> response = testRestTemplate.postForEntity(BASE_URL + "/holiday/employee/{id}/add", new HttpEntity<>(expected), String.class, id);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ResponseEntity<Employee> responseEmployee = testRestTemplate.getForEntity(BASE_URL + "/employee/{id}/get", Employee.class, id);
+        String actual = response.getBody();
+        String expectedResponse = "The number of holidays available is less than the requested leave! You have only " + (Objects.requireNonNull(responseEmployee.getBody()).getNextYearLeave() - responseEmployee.getBody().getSumHolidayNextYear()) + " days in 2022!";
+        assertEquals(expectedResponse, actual);
+    }
+
+    @Test
     void delete_inputHolidayDTOWithValidDateInterval_shouldReturnRightMessageAndLeaveRestored() {
         long id = 1;
         ResponseEntity<Employee> response;
@@ -251,18 +336,176 @@ class HolidayControllerITTest {
     }
 
     @Test
-    void getAllBusinessDayByDateInterval() {
+    void getAllBusinessDayByDateInterval_inputStartDateAndEndDate_shouldReturnRightMessage() {
+        long id = 1;
+        String startDate = "2021-01-01";
+        String endDate = "2021-02-25";
+        ResponseEntity<String> allBusinessDayByDateInterval = holidayController.getAllBusinessDayByDateInterval(startDate, endDate, id);
+        long days = 30;
+        String expected = String.format("The employee with id:%d worked %d days from %s to %s!", id, days, startDate, endDate);
+        String actual = allBusinessDayByDateInterval.getBody();
+        assertEquals(expected, actual);
     }
 
     @Test
-    void getAllBusinessDayByYearAndMonth() {
+    void getAllBusinessDayByDateInterval_inputInvalidStartDateAndEndDate_shouldReturnRegisterException() {
+        long id = 1;
+        String startDate = "";
+        String endDate = "2021-02-25";
+        String expected = "Invalid date format!";
+        String actual = "";
+        try {
+            holidayController.getAllBusinessDayByDateInterval(startDate, endDate, id);
+        } catch (RegisterException ex) {
+            actual = ex.getMessage();
+        }
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
+    void getAllBusinessDayByDateInterval_inputStartDateAndEndDateAndInvalidEmployeeDTO_shouldReturnRegisterException() {
+        long id = 1;
+        employeeDTO.setBeginningOfEmployment(null);
+        testRestTemplate.put(BASE_URL + "/employee/{id}/update", new HttpEntity<>(employeeDTO), 1);
+        String startDate = "2021-01-05";
+        String endDate = "2021-02-25";
+        String expected = "The beginning of employment date is null!";
+        String actual = "";
+        try {
+            holidayController.getAllBusinessDayByDateInterval(startDate, endDate, id);
+        } catch (RegisterException ex) {
+            actual = ex.getMessage();
+        }
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
+    void getAllBusinessDayByDateInterval_inputStartDateAndEndDateAndValidEmployeeDTO_shouldReturnRegisterException() {
+        long id = 1;
+        employeeDTO.setBeginningOfEmployment(LocalDate.of(2021, 1, 26));
+        testRestTemplate.put(BASE_URL + "/employee/{id}/update", new HttpEntity<>(employeeDTO), 1);
+        String startDate = "2021-01-15";
+        String endDate = "2021-01-25";
+        String expected = String.format("The worker with id: %d has no beginning of employment date during that interval!", id);
+        String actual = "";
+        try {
+            holidayController.getAllBusinessDayByDateInterval(startDate, endDate, id);
+        } catch (RegisterException ex) {
+            actual = ex.getMessage();
+        }
+        assertEquals(expected, actual);
     }
 
     @Test
-    void getHolidayByDateInterval() {
+    void getAllBusinessDayByDateInterval_inputStartDateAndEndDateDoNotHaveHolidayDayDatabase_shouldReturnRegisterException() {
+        long id = 1;
+        testRestTemplate.delete(BASE_URL + "/holidayday/{id}/delete", id);
+        String startDate = "2021-06-15";
+        String endDate = "2021-06-25";
+        String expected = String.format("You don't have holiday day database for 2021!");
+        String actual = "";
+        try {
+            holidayController.getAllBusinessDayByDateInterval(startDate, endDate, id);
+        } catch (RegisterException ex) {
+            actual = ex.getMessage();
+        }
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
+    void getAllBusinessDayByYearAndMonth_inputYearAndMonth_shouldReturnRightMessage() {
+        String year = "2021";
+        String month = "4";
+        long employeeId = 1;
+        ResponseEntity<String> allBusinessDayByYearAndMonth = holidayController.getAllBusinessDayByYearAndMonth(year, month, employeeId);
+        long days = 20;
+        String expected = String.format("The employee with id:%d worked %d days in a given month %s of a given year %s!", employeeId, days, month, year);
+        assertEquals(expected, allBusinessDayByYearAndMonth.getBody());
     }
 
     @Test
-    void getNumberOfHolidayByDateInterval() {
+    void getAllBusinessDayByYearAndMonth_inputYearAndMonth_shouldReturnRegisterException() {
+        String year = "";
+        String month = "4";
+        long employeeId = 1;
+        String expected = "Invalid arguments!";
+        String actual = "";
+        try {
+            holidayController.getAllBusinessDayByYearAndMonth(year, month, employeeId);
+        } catch (RegisterException ex) {
+            actual = ex.getMessage();
+        }
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getHolidayByDateInterval_inputStartDateAndEndDate_shouldReturnRegisterException() {
+        String startDate = "2021-06-15";
+        String endDate = "";
+        long employeeId = 1;
+        String expected = "Invalid date format!";
+        String actual = "";
+        try {
+            holidayController.getHolidayByDateInterval(startDate, endDate, employeeId);
+        } catch (RegisterException ex) {
+            actual = ex.getMessage();
+        }
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getHolidayByDateInterval_inputStartDateAndEndDate_shouldReturnLocaldateSet() {
+        long employeeId = 1;
+        String startDate = "2021-02-01";
+        String endDate = "2021-02-28";
+        ResponseEntity<Set<LocalDate>> holidayByDateInterval = holidayController.getHolidayByDateInterval(startDate, endDate, employeeId);
+        Set<LocalDate> expected = new TreeSet<>();
+        expected.addAll(Set.of(LocalDate.of(2021, 2, 5), LocalDate.of(2021, 2, 8), LocalDate.of(2021, 2, 9), LocalDate.of(2021, 2, 10), LocalDate.of(2021, 2, 11), LocalDate.of(2021, 2, 12), LocalDate.of(2021, 2, 15), LocalDate.of(2021, 2, 25), LocalDate.of(2021, 2, 26)));
+        assertEquals(expected, holidayByDateInterval.getBody());
+    }
+
+    @Test
+    void getHolidayByDateInterval_inputStartDateAndEndDateWithoutEmployee_shouldReturnBadRequest() {
+        long employeeId = 2;
+        String startDate = "2021-02-01";
+        String endDate = "2021-02-28";
+        String actual = "";
+        String expected = String.format("The employee entity doesn't exist with id: %d!", employeeId);
+        try {
+            holidayController.getHolidayByDateInterval(startDate, endDate, employeeId);
+        } catch (RegisterException ex) {
+            actual = ex.getMessage();
+        }
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getAmountOfLeaveByDateInterval_inputStartDateAndEndDate_shouldReturnRightMessage() {
+        long employeeId = 1;
+        String startDate = "2021-02-01";
+        String endDate = "2021-02-28";
+        ResponseEntity<String> amountOfLeaveByDateInterval = holidayController.getAmountOfLeaveByDateInterval(startDate, endDate, employeeId);
+        String actual = amountOfLeaveByDateInterval.getBody();
+        long days = 9;
+        String expected = String.format("The employee with id:%d number of leave %d days from %s to %s!", employeeId, days, startDate, endDate);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getAmountOfLeaveByDateInterval_inputStartDateAndEndDate_shouldReturnBadRequest() {
+        long employeeId = 1;
+        String startDate = "";
+        String endDate = "2021-02-28";
+        String actual = "";
+        String expected = "Invalid date format!";
+        try {
+            holidayController.getAmountOfLeaveByDateInterval(startDate, endDate, employeeId);
+        } catch (RegisterException ex) {
+            actual = ex.getMessage();
+        }
+        assertEquals(expected, actual);
     }
 }
