@@ -58,7 +58,7 @@ Az identityNumber egy 9 hosszúságú egyedi azonosítószám. Ha minden adat va
 * nextYearLeave  
 * sumHolidayNextYear 
 
-A sumHoliday és a sumHolidayNextYear az összes idei és a következő évi kivett szabadságainak a számát tartalmazza. A program úgy lett megírva, hogy szabadságot csak a tárgyévben vagy a tárgyévtől a következő évre megjelölt folyamatos időszakra lehet kivenni, természetesen ha van elegendő még kivehető szabadság. Tárgyévtől korábbi vagy csak a következő évre megjelölt időszak esetén hibát dob. Az extra szabadság a gyermekek számától függ,(1 esetén plusz 2 nap, 2 esetén plusz 4 nap , 3 vagy több esetén plusz 7 nap). A program automatikusan hozzáadja a children felvitele után. Fontos megemlítenem, mivel nem találtam egységes szabályzatot arra vonatkozóan, hogy a szabadság átvihető-e a következő évre, így az tárgyévi szabadság csak a tárgyévre, a következő évi szabadság csak a következő évre vonatkozik.
+A sumHoliday és a sumHolidayNextYear az összes idei és a következő évi kivett szabadságok számát tartalmazza. A program úgy lett megírva, hogy szabadságot csak a tárgyévben vagy a tárgyévtől a következő évre megjelölt folyamatos időszakra lehessen kivenni, természetesen ha van elegendő még kivehető szabadság. Tárgyévtől korábbi vagy csak a következő évre megjelölt időszak esetén hibát dob. Az extra szabadság a gyermekek számától függ,(1 esetén plusz 2 nap, 2 esetén plusz 4 nap , 3 vagy több esetén plusz 7 nap). A program automatikusan hozzáadja a children felvitele után. Fontos megemlítenem, mivel nem találtam egységes szabályzatot arra vonatkozóan, hogy a szabadság átvihető-e a következő évre, így az tárgyévi szabadság csak a tárgyévre, a következő évi szabadság csak a következő évre vonatkozik.
 
 endpointok listája:  
 
