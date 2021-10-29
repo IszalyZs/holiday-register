@@ -158,7 +158,7 @@ class HolidayControllerITTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         ResponseEntity<Employee> responseEmployee = testRestTemplate.getForEntity(BASE_URL + "/employee/{id}/get", Employee.class, id);
         String actual = response.getBody();
-        String expectedResponse = "The number of holidays available is less than the requested leave! You have only " + (responseEmployee.getBody().getBasicLeave() + responseEmployee.getBody().getExtraLeave() - responseEmployee.getBody().getSumHoliday()) + " days!";
+        String expectedResponse = "The number of holidays available is less than the requested leave! You have only " + (Objects.requireNonNull(responseEmployee.getBody()).getBasicLeave() + responseEmployee.getBody().getExtraLeave() - responseEmployee.getBody().getSumHoliday()) + " days!";
         assertEquals(expectedResponse, actual);
     }
 
@@ -404,7 +404,7 @@ class HolidayControllerITTest {
         testRestTemplate.delete(BASE_URL + "/holidayday/{id}/delete", id);
         String startDate = "2021-06-15";
         String endDate = "2021-06-25";
-        String expected = String.format("You don't have holiday day database for 2021!");
+        String expected = "You don't have holiday day database for 2021!";
         String actual = "";
         try {
             holidayController.getAllBusinessDayByDateInterval(startDate, endDate, id);
@@ -490,7 +490,7 @@ class HolidayControllerITTest {
         ResponseEntity<String> amountOfLeaveByDateInterval = holidayController.getAmountOfLeaveByDateInterval(startDate, endDate, employeeId);
         String actual = amountOfLeaveByDateInterval.getBody();
         long days = 9;
-        String expected = String.format("The employee with id:%d number of leave %d days from %s to %s!", employeeId, days, startDate, endDate);
+        String expected = String.format("The employee with id:%d amount of leave %d days from %s to %s!", employeeId, days, startDate, endDate);
         assertEquals(expected, actual);
     }
 
