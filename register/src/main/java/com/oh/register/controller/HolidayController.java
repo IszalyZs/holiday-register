@@ -114,7 +114,7 @@ public class HolidayController {
         return ResponseEntity.ok(holidayByDateInterval);
     }
 
-    @GetMapping("/holiday/employee/{id}/numbers")
+    @GetMapping("/holiday/employee/{id}/amount")
     @Operation(summary = "get number of holiday by date interval", description = "get number of holiday by date interval")
     public ResponseEntity<String> getAmountOfLeaveByDateInterval(@RequestParam("start") String startDate, @RequestParam("end") String endDate, @PathVariable("id") Long id) {
         if (id == null) throw new RegisterException("The given id mustn't be null!");

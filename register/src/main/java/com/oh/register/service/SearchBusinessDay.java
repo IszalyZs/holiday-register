@@ -44,19 +44,19 @@ public class SearchBusinessDay {
             LocalDate localDate = LocalDate.of(holidayDTO.getStartDate().getYear(), 12, 31);
             Long sumBusinessDayThisYear = getSumBusinessDay(holidayDTO.getStartDate(), localDate, holidayDTO.getStartDate().getYear());
             Long sumBusinessDayNextYear = getSumBusinessDay(LocalDate.of(holidayDTO.getFinishDate().getYear(), 1, 1), holidayDTO.getFinishDate(), holidayDTO.getFinishDate().getYear());
-            checkingThisYearNumberOfHoliday(sumBusinessDayThisYear, holidayDTO);
-            checkingNextYearNumberOfHoliday(sumBusinessDayNextYear, holidayDTO);
+            checkingThisYearAmountOfHoliday(sumBusinessDayThisYear, holidayDTO);
+            checkingNextYearAmountOfHoliday(sumBusinessDayNextYear, holidayDTO);
             return sumBusinessDayThisYear;
         } else throw new RegisterException("Invalid date interval! Next year's leave is not allowed");
     }
 
-    private void checkingThisYearNumberOfHoliday(Long sumBusinessDayThisYear, HolidayDTO holidayDTO) {
+    private void checkingThisYearAmountOfHoliday(Long sumBusinessDayThisYear, HolidayDTO holidayDTO) {
         Employee employee = employeeService.findById(holidayDTO.getEmployeeId());
         if ((employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday() - sumBusinessDayThisYear) < 0)
             throw new RegisterException("The number of holidays available is less than the requested leave! You have only " + (employee.getBasicLeave() + employee.getExtraLeave() - employee.getSumHoliday()) + " days in " + holidayDTO.getStartDate().getYear() + "!");
     }
 
-    private void checkingNextYearNumberOfHoliday(Long sumBusinessDayNextYear, HolidayDTO holidayDTO) {
+    private void checkingNextYearAmountOfHoliday(Long sumBusinessDayNextYear, HolidayDTO holidayDTO) {
         Employee employee = employeeService.findById(holidayDTO.getEmployeeId());
         if ((employee.getNextYearLeave() - employee.getSumHolidayNextYear() - sumBusinessDayNextYear) >= 0) {
             employee.setSumHolidayNextYear(employee.getSumHolidayNextYear() + sumBusinessDayNextYear);
